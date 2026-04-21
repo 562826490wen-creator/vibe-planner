@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Planner - 스마트 여행 일정 플래너</title>
+    <title>Vibe Planner Global | AI Travel Scheduler</title>
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,281 +12,566 @@
     <!-- Leaflet CSS (CDN) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <!-- Custom Font (Pretendard) -->
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Font (Pretendard & Inter) -->
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #F3F4F6;
-            /* 라이트 그레이 배경 */
+            font-family: 'Inter', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            overflow: hidden;
+            /* Prevent page scroll */
         }
 
-        /* 왼쪽 리스트 스크롤바 미장센 */
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #3B82F6;
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #F3F4F6;
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #D1D5DB;
-            border-radius: 4px;
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #9CA3AF;
+            background: rgba(107, 114, 128, 0.8);
         }
 
-        /* 리플렛 지도 팝업 커스텀 스타일 */
+        /* Leaflet Overrides */
         .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            padding: 2px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
 
         .leaflet-popup-content {
-            font-family: inherit;
             margin: 12px;
+            font-family: inherit;
         }
 
         .leaflet-container a.leaflet-popup-close-button {
-            top: 10px;
-            right: 10px;
-            color: #9CA3AF;
+            top: 12px;
+            right: 12px;
+            color: #6B7280;
         }
 
-        .leaflet-container a.leaflet-popup-close-button:hover {
-            color: #374151;
+        .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            overflow: hidden;
+            border-radius: 12px !important;
+        }
+
+        .leaflet-control-zoom a {
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(10px);
+            color: #374151 !important;
+        }
+
+        /* Initial Load Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
     </style>
 </head>
 
-<body class="overflow-hidden">
+<body class="relative w-screen h-screen">
 
-    <!-- 레이아웃 컨테이너 -->
-    <div class="flex flex-col md:flex-row h-screen">
+    <!-- Background Map -->
+    <div id="map" class="absolute inset-0 w-full h-full z-0"></div>
 
-        <!-- 왼쪽 패널 (일정 리스트) - 40% -->
+    <!-- Floating UI Panel -->
+    <div
+        class="absolute inset-x-0 bottom-0 md:inset-auto md:top-6 md:left-6 md:bottom-6 md:w-[460px] z-10 flex flex-col pointer-events-none">
+
+        <!-- Main Panel -->
         <div
-            class="w-full md:w-[40%] h-[45vh] md:h-full bg-gray-100 p-6 md:p-8 flex flex-col z-10 shadow-2xl overflow-hidden relative border-r border-gray-200">
+            class="glass-panel flex-1 rounded-t-3xl md:rounded-3xl flex flex-col pointer-events-auto overflow-hidden animate-fade-up">
 
-            <!-- 헤더 및 버튼 영역 -->
-            <div class="flex-shrink-0">
-                <div class="flex items-center mb-1">
-                    <span class="text-3xl mr-3">✈️</span>
-                    <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">Vibe <span
-                            class="text-blue-500">Planner</span></h1>
-                </div>
-                <p class="text-gray-500 text-sm mb-6 ml-1 font-medium">스마트하고 깔끔하게 떠나는 나만의 여행 스케줄러</p>
-
-                <button id="generateBtn"
-                    class="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold text-lg py-4 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex justify-center items-center gap-2 mb-6 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    오사카 3박 4일 일정 생성
-                </button>
-            </div>
-
-            <!-- 스크롤 가능한 생성 카드 영역 -->
-            <div id="itineraryList" class="flex-grow overflow-y-auto pr-3 space-y-2 pb-10">
-                <!-- 초기 빈 화면 표시 -->
-                <div class="h-full flex flex-col items-center justify-center text-gray-400 opacity-90" id="emptyState">
-                    <div class="bg-gray-200 p-4 rounded-full mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-500" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                        </svg>
+            <!-- Header & Controls -->
+            <div class="p-6 pb-4 border-b border-white/40 bg-white/30">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/30">
+                            <i data-lucide="plane-takeoff" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900 tracking-tight leading-tight">Vibe Planner</h1>
+                            <p class="text-xs text-blue-600 font-semibold tracking-wider uppercase">Global Edition</p>
+                        </div>
                     </div>
-                    <p class="text-lg font-semibold text-gray-500">버튼을 눌러 일정을 생성해보세요</p>
-                    <p class="text-sm mt-2 text-center text-gray-400 max-w-[200px]">오사카의 핵심 명소 10곳을 추천해드립니다.</p>
+                </div>
+
+                <!-- Inputs: City & Days -->
+                <div class="space-y-4">
+                    <!-- City Select -->
+                    <div class="relative">
+                        <i data-lucide="map-pin"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                        <select id="citySelect"
+                            class="w-full bg-white/60 border border-white/50 text-gray-800 text-base rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 pl-12 appearance-none outline-none font-medium transition-all cursor-pointer shadow-sm">
+                            <option value="seoul">🇰🇷 Seoul (首尔 / 서울)</option>
+                            <option value="osaka">🇯🇵 Osaka (大阪 / 오사카)</option>
+                            <option value="tokyo">🇯🇵 Tokyo (东京 / 도쿄)</option>
+                            <option value="paris">🇫🇷 Paris (巴黎 / 파리)</option>
+                            <option value="newyork">🇺🇸 New York (纽约 / 뉴욕)</option>
+                            <option value="london">🇬🇧 London (伦敦 / 런던)</option>
+                            <option value="bangkok">🇹🇭 Bangkok (曼谷 / 방콕)</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
+                    </div>
+
+                    <!-- Days Select -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2 px-1">
+                            <span class="text-sm font-semibold text-gray-600">Duration (时长 / 기간)</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2" id="daysGroup">
+                            <button
+                                class="day-btn active bg-blue-600 text-white font-bold py-2.5 rounded-xl shadow-md transition-all scale-[1.02]"
+                                data-days="1">1 Day</button>
+                            <button
+                                class="day-btn bg-white/60 text-gray-600 hover:bg-white font-medium py-2.5 rounded-xl border border-white/50 transition-all border-transparent"
+                                data-days="3">3 Days</button>
+                            <button
+                                class="day-btn bg-white/60 text-gray-600 hover:bg-white font-medium py-2.5 rounded-xl border border-white/50 transition-all border-transparent"
+                                data-days="5">5 Days</button>
+                            <button
+                                class="day-btn bg-white/60 text-gray-600 hover:bg-white font-medium py-2.5 rounded-xl border border-white/50 transition-all border-transparent"
+                                data-days="7">7 Days</button>
+                        </div>
+                    </div>
+
+                    <button id="generateBtn"
+                        class="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 flex justify-center items-center gap-2 mt-2">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        <span>Generate Itinerary (生成行程 / 일정 생성)</span>
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- 오른쪽 패널 (전체 지도) - 60% -->
-        <div class="w-full md:w-[60%] h-[55vh] md:h-full relative z-0 bg-gray-50">
-            <div id="map" class="w-full h-full"></div>
+            <!-- List Area -->
+            <div id="itineraryList"
+                class="flex-1 overflow-y-auto p-5 pb-20 md:pb-5 space-y-2 bg-gradient-to-b from-transparent to-white/10 relative">
+                <!-- Empty State -->
+                <div class="h-full flex flex-col items-center justify-center text-center px-4" id="emptyState">
+                    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <i data-lucide="compass" class="w-10 h-10 text-blue-500 opacity-80"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-1">Ready to explore?</h3>
+                    <p class="text-sm text-gray-500">Pick a city and duration, then tap generate to visualize your smart
+                        itinerary.</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Leaflet JS (CDN) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // === 오사카 3박 4일 일정 데이터 (10개 장소) ===
-        const itineraryDays = [
-            {
-                day: 1,
-                title: "1일차: 도착과 상업의 중심지 맛보기",
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Data Definition (Compact format: [Name, Lat, Lng, Description])
+        // Each city has 21 spots to support up to 7 days (3 spots per day)
+        const db = {
+            seoul: {
+                name: "Seoul", coords: [37.5665, 126.9780],
                 spots: [
-                    { id: "spot1", time: "14:00", name: "구로몬 시장", desc: "오사카의 부엌, 신선한 해산물과 다채로운 길거리 음식 탐방", lat: 34.6654, lng: 135.5068 },
-                    { id: "spot2", time: "18:00", name: "도톤보리", desc: "화려한 네온사인과 글리코상 앞 필수 인증샷 찰칵!", lat: 34.6687, lng: 135.5013 }
+                    ["Gyeongbokgung Palace", 37.5796, 126.9770, "Historic royal palace of the Joseon dynasty"],
+                    ["N Seoul Tower", 37.5512, 126.9882, "Iconic tower with panoramic city views"],
+                    ["Bukchon Hanok Village", 37.5826, 126.9831, "Traditional alleys with hanok houses"],
+                    ["Myeongdong", 37.5636, 126.9832, "Bustling shopping street & street food"],
+                    ["Dongdaemun Design Plaza", 37.5693, 127.0093, "Futuristic design landmark by Zaha Hadid"],
+                    ["Hongdae", 37.5556, 126.9242, "Trendy district known for youth culture & indie arts"],
+                    ["Gangnam District", 37.4979, 127.0276, "Upscale shopping, dining, and nightlife"],
+                    ["Lotte World", 37.5113, 127.0980, "Massive indoor and outdoor theme park"],
+                    ["Starfield Library", 37.5113, 127.0595, "Stunning public library inside COEX mall"],
+                    ["Han River Park", 37.5284, 126.9330, "Riverside park perfect for relaxing and cycling"],
+                    ["Changdeokgung", 37.5794, 126.9910, "UNESCO World Heritage palace with secret garden"],
+                    ["Insadong", 37.5743, 126.9858, "Heart of traditional Korean arts and tea houses"],
+                    ["Itaewon", 37.5340, 126.9940, "Diverse international dining and nightlife district"],
+                    ["Gwangjang Market", 37.5702, 126.9990, "Famous traditional market for authentic Korean food"],
+                    ["National Museum of Korea", 37.5239, 126.9803, "Extensive exhibits of Korean history and art"],
+                    ["Seoul Forest", 37.5444, 127.0374, "Large urban park with deer and beautiful trails"],
+                    ["Cheonggyecheon", 37.5681, 126.9787, "Beautifully restored urban stream walkway"],
+                    ["Namsangol Hanok Village", 37.5592, 126.9937, "Traditional village setting at the foot of Namsan"],
+                    ["Seokchon Lake", 37.5097, 127.1009, "Scenic lake surrounded by cherry blossoms in spring"],
+                    ["Jongmyo Shrine", 37.5744, 126.9942, "Confucian shrine dedicated to Joseon kings"],
+                    ["Ikseondong", 37.5748, 126.9899, "Trendy cafe culture inside vintage hanok alleys"]
                 ]
             },
-            {
-                day: 2,
-                title: "2일차: 역사와 낭만적인 스카이라인",
+            osaka: {
+                name: "Osaka", coords: [34.6937, 135.5023],
                 spots: [
-                    { id: "spot3", time: "10:00", name: "오사카성", desc: "아름다운 천수각과 역사 깊은 오사카의 상징적 랜드마크", lat: 34.6873, lng: 135.5262 },
-                    { id: "spot4", time: "19:00", name: "우메다 스카이 빌딩", desc: "아찔한 공중정원 전망대에서 감상하는 환상적인 도심 야경", lat: 34.7053, lng: 135.4896 }
+                    ["Dotonbori", 34.6687, 135.5013, "Neon-lit entertainment and street food district"],
+                    ["Osaka Castle", 34.6873, 135.5262, "Historic landmark surrounded by a beautiful park"],
+                    ["Universal Studios Japan", 34.6654, 135.4323, "World-class theme park with immersive areas"],
+                    ["Umeda Sky Building", 34.7053, 135.4896, "Spectacular floating garden observatory"],
+                    ["Osaka Aquarium Kaiyukan", 34.6545, 135.4290, "One of the world's largest public aquariums"],
+                    ["Tsutenkaku", 34.6525, 135.5063, "Retro observation tower in Shinsekai"],
+                    ["Shitennoji Temple", 34.6533, 135.5165, "One of Japan's oldest Buddhist temples"],
+                    ["Kuromon Market", 34.6654, 135.5068, "Osaka's kitchen, famous for fresh seafood"],
+                    ["Abeno Harukas", 34.6458, 135.5140, "Tallest skyscraper in Japan with premium views"],
+                    ["Tempozan Ferris Wheel", 34.6562, 135.4312, "Giant Ferris wheel offering bay views"],
+                    ["Namba Yasaka Shrine", 34.6613, 135.4967, "Unique shrine featuring a massive lion head stage"],
+                    ["Sumiyoshi Taisha", 34.6127, 135.4925, "Ancient Shinto shrine with unique architecture"],
+                    ["Nakanoshima Park", 34.6934, 135.4984, "River island with neo-renaissance buildings and roses"],
+                    ["Spa World", 34.6500, 135.5052, "Massive bathhouse with globally themed zones"],
+                    ["Nippombashi Den Den Town", 34.6599, 135.5058, "Osaka's hub for electronics, anime, and pop culture"],
+                    ["Americamura", 34.6718, 135.4981, "Youth culture and trendy fashion district"],
+                    ["Hozenji Yokocho", 34.6678, 135.5017, "Atmospheric traditional narrow alleyway"],
+                    ["Osaka Mint Bureau", 34.6953, 135.5218, "Famous for its spectacular cherry blossom passage"],
+                    ["Tennoji Zoo", 34.6508, 135.5085, "Historic urban zoo nestled in the city center"],
+                    ["National Museum of Art", 34.6908, 135.4916, "Impressive subterranean contemporary art museum"],
+                    ["Osaka Museum of Housing", 34.7103, 135.5143, "Recreated Edo period streets and living history"]
                 ]
             },
-            {
-                day: 3,
-                title: "3일차: 테마파크 어드벤처 & 바다의 신비",
+            tokyo: {
+                name: "Tokyo", coords: [35.6762, 139.6503],
                 spots: [
-                    { id: "spot5", time: "09:00", name: "유니버설 스튜디오 재팬", desc: "도착부터 설렘! 멈추지 않는 짜릿한 어트랙션의 세계", lat: 34.6654, lng: 135.4323 },
-                    { id: "spot6", time: "18:00", name: "가이유칸 (해유관)", desc: "세계 최대 규모의 수족관 속 신비로운 고래상어 만나기", lat: 34.6545, lng: 135.4290 }
+                    ["Senso-ji Temple", 35.7148, 139.7967, "Tokyo's oldest and most significant Buddhist temple"],
+                    ["Tokyo Skytree", 35.7100, 139.8107, "Iconic broadcasting tower offering sweeping views"],
+                    ["Shibuya Crossing", 35.6595, 139.7005, "The legendary, busiest pedestrian crossing in the world"],
+                    ["Meiji Jingu", 35.6690, 139.6993, "Serene Shinto shrine enveloped by a lush forest"],
+                    ["Tokyo Tower", 35.6586, 139.7454, "Classic red-and-white communications and observation tower"],
+                    ["Shinjuku Gyoen", 35.6852, 139.7101, "A massive, beautiful national garden blending styles"],
+                    ["Akihabara", 35.6983, 139.7731, "The global epicenter of anime, gaming, and electronics"],
+                    ["Tsukiji Outer Market", 35.6646, 139.7707, "World-famous destination for supreme street food and seafood"],
+                    ["Ueno Park", 35.7141, 139.7736, "Vast public park surrounded by museums and cherry trees"],
+                    ["Odaiba", 35.6248, 139.7766, "Futuristic high-tech entertainment hub on an artificial island"],
+                    ["Roppongi Hills", 35.6605, 139.7291, "Upscale mega-complex for shopping, dining, and art"],
+                    ["Imperial Palace", 35.6852, 139.7528, "The primary residence of the Emperor of Japan"],
+                    ["Harajuku / Takeshita St", 35.6702, 139.7027, "The vibrant heart of kawaii and extreme youth fashion"],
+                    ["Ginza", 35.6712, 139.7665, "Tokyo's premier luxury shopping and dining district"],
+                    ["Yoyogi Park", 35.6717, 139.6949, "Spacious park known for weekend gatherings and events"],
+                    ["TeamLab Planets", 35.6486, 139.7898, "Breathtaking interactive digital art museum in Toyosu"],
+                    ["Nakamise Shopping St", 35.7126, 139.7965, "Traditional souvenir street leading to Senso-ji"],
+                    ["Nakano Broadway", 35.7088, 139.6657, "Dense multi-story shopping complex for subcultures"],
+                    ["Tokyo National Museum", 35.7187, 139.7765, "Extensive gallery of ancient Japanese and Asian art"],
+                    ["Edo-Tokyo Museum", 35.6963, 139.7937, "Fascinating museum detailing the history of Tokyo"],
+                    ["Ghibli Museum", 35.6685, 139.5704, "Whimsical museum dedicated to Studio Ghibli's animations"]
                 ]
             },
-            {
-                day: 4,
-                title: "4일차: 복고와 클래식, 여정의 마무리",
+            paris: {
+                name: "Paris", coords: [48.8566, 2.3522],
                 spots: [
-                    { id: "spot7", time: "10:00", name: "시텐노지", desc: "천년의 세월을 품은, 일본에서 제일 오래된 역사 깊은 사찰", lat: 34.6533, lng: 135.5165 },
-                    { id: "spot8", time: "12:00", name: "텐노지 동물원", desc: "빌딩 숲 한가운데 자리잡은 도심 속 생태 동물원 산책", lat: 34.6508, lng: 135.5085 },
-                    { id: "spot9", time: "14:00", name: "츠텐카쿠 & 신세카이", desc: "레트로 감성 골목 코스, 본고장의 바삭한 쿠시카츠 먹방", lat: 34.6525, lng: 135.5063 },
-                    { id: "spot10", time: "16:00", name: "아베노 하루카스", desc: "오사카가 한눈에! 하루카스 300에서 압도적인 전망으로 마무리", lat: 34.6458, lng: 135.5140 }
+                    ["Eiffel Tower", 48.8584, 2.2945, "The iconic wrought-iron lattice tower on the Champ de Mars"],
+                    ["Louvre Museum", 48.8606, 2.3376, "World's largest art museum, home to the Mona Lisa"],
+                    ["Notre-Dame de Paris", 48.8529, 2.3499, "Masterpiece of French Gothic architecture"],
+                    ["Arc de Triomphe", 48.8738, 2.2950, "Monument honoring those who fought and died for France"],
+                    ["Sacré-Cœur", 48.8867, 2.3431, "White-domed basilica situated on the Montmartre hill"],
+                    ["Champs-Élysées", 48.8698, 2.3075, "Famous, glamorous avenue for theaters and shopping"],
+                    ["Musée d'Orsay", 48.8600, 2.3266, "Vast collection of Impressionist art in a former railway station"],
+                    ["Panthéon", 48.8462, 2.3458, "Neoclassical mausoleum containing remains of distinguished citizens"],
+                    ["Sainte-Chapelle", 48.8554, 2.3450, "Royal chapel boasting stunning 13th-century stained glass"],
+                    ["Luxembourg Gardens", 48.8462, 2.3372, "Serene formal gardens created in 1612 by Marie de' Medici"],
+                    ["Centre Pompidou", 48.8606, 2.3522, "High-tech architectural complex housing modern art collections"],
+                    ["Montmartre", 48.8863, 2.3430, "A large hill retaining a village atmosphere, historically an artists' hub"],
+                    ["Palace of Versailles", 48.8048, 2.1203, "Opulent royal chateau that was the principal royal residence"],
+                    ["Palais Garnier", 48.8719, 2.3316, "Incredibly opulent 19th-century masterpiece opera house"],
+                    ["Seine River Cruise", 48.8602, 2.3255, "Scenic boat tour passing central Paris's most iconic landmarks"],
+                    ["Les Invalides", 48.8560, 2.3126, "Military history museums and the tomb of Napoleon Bonaparte"],
+                    ["Tuileries Garden", 48.8635, 2.3276, "Elegant public garden located between the Louvre and Place de la Concorde"],
+                    ["Catacombs of Paris", 48.8338, 2.3324, "Fascinating underground ossuaries holding the remains of millions"],
+                    ["Place de la Concorde", 48.8656, 2.3212, "Major public square adorned with a glorious Egyptian obelisk"],
+                    ["Moulin Rouge", 48.8841, 2.3323, "The world-famous cabaret club known as the birthplace of the can-can"],
+                    ["Grand Palais", 48.8661, 2.3125, "Historic site, exhibition hall and museum complex with a glass roof"]
+                ]
+            },
+            newyork: {
+                name: "New York", coords: [40.7128, -74.0060],
+                spots: [
+                    ["Statue of Liberty", 40.6892, -74.0445, "Colossal neoclassical sculpture and universal symbol of freedom"],
+                    ["Central Park", 40.7812, -73.9665, "Massive, iconic urban park set in the middle of Manhattan"],
+                    ["Times Square", 40.7580, -73.9855, "Bustling, neon-lit commercial intersection and entertainment center"],
+                    ["Empire State Building", 40.7484, -73.9857, "Legendary Art Deco skyscraper towering over Midtown Manhattan"],
+                    ["Brooklyn Bridge", 40.7061, -73.9969, "Historic neo-Gothic suspension bridge connecting Manhattan and Brooklyn"],
+                    ["The Met", 40.7794, -73.9632, "Metropolitan Museum of Art, the largest art museum in the Americas"],
+                    ["MoMA", 40.7614, -73.9776, "Museum of Modern Art, featuring extraordinary contemporary collections"],
+                    ["High Line", 40.7480, -74.0048, "Unique elevated linear park established on a former railway trestle"],
+                    ["Top of the Rock", 40.7593, -73.9794, "Observatory deck at Rockefeller Center with unmatched city views"],
+                    ["One World Observatory", 40.7127, -74.0134, "Breathtaking views from the tallest building in the Western Hemisphere"],
+                    ["Grand Central Terminal", 40.7527, -73.9772, "Historic, exquisitely detailed commuter rail terminal"],
+                    ["Broadway", 40.7590, -73.9845, "The beating heart of the American commercial theatrical industry"],
+                    ["9/11 Memorial", 40.7115, -74.0133, "Poignant memorial and museum commemorating the September 11 attacks"],
+                    ["Wall Street", 40.7074, -74.0113, "The bustling hub of the global financial district"],
+                    ["Washington Square Park", 40.7308, -73.9973, "Famous public park dominated by the Washington Arch"],
+                    ["Natural History Museum", 40.7813, -73.9740, "Renowned institution dedicated to discovering human cultures and the natural world"],
+                    ["Guggenheim Museum", 40.7830, -73.9590, "Modern and contemporary art museum housed in a Frank Lloyd Wright masterpiece"],
+                    ["Battery Park", 40.7033, -74.0170, "Beautiful public park at the southern tip of Manhattan Island"],
+                    ["Chelsea Market", 40.7420, -74.0048, "Vibrant indoor food hall, shopping mall, and television production facility"],
+                    ["Flatiron Building", 40.7411, -73.9897, "Distinctive, iconic triangular skyscraper built in 1902"],
+                    ["St. Patrick's Cathedral", 40.7586, -73.9768, "Decorated Neo-Gothic-style Roman Catholic cathedral church"]
+                ]
+            },
+            london: {
+                name: "London", coords: [51.5074, -0.1278],
+                spots: [
+                    ["Big Ben", 51.5007, -0.1246, "The globally recognizable striking clock at the Palace of Westminster"],
+                    ["Tower of London", 51.5081, -0.0759, "Historic fortress on the Thames housing the Crown Jewels"],
+                    ["British Museum", 51.5194, -0.1270, "A vast, comprehensive museum dedicated to human history and culture"],
+                    ["London Eye", 51.5033, -0.1195, "Giant, iconic observation wheel operating on the South Bank"],
+                    ["Buckingham Palace", 51.5014, -0.1419, "The grand London residence and administrative headquarters of the monarch"],
+                    ["Tower Bridge", 51.5055, -0.0754, "A defining 19th-century combined bascule and suspension bridge"],
+                    ["Westminster Abbey", 51.4993, -0.1273, "Majestic royal church offering daily services and centuries of history"],
+                    ["Natural History Museum", 51.4967, -0.1764, "Exhibits a vast range of specimens from various segments of natural history"],
+                    ["V&A Museum", 51.4966, -0.1722, "Victoria and Albert Museum, the world's leading museum of art and design"],
+                    ["Hyde Park", 51.5073, -0.1657, "One of the largest, most famous parks stretching across central London"],
+                    ["St Paul's Cathedral", 51.5138, -0.0984, "Magnificent Anglican cathedral characterized by its massive dome"],
+                    ["Tate Modern", 51.5076, -0.0994, "World-renowned modern art gallery housed in a former power station"],
+                    ["National Gallery", 51.5089, -0.1283, "An art museum in Trafalgar Square featuring European masterpieces"],
+                    ["Covent Garden", 51.5117, -0.1240, "Vibrant district featuring upscale shops, restaurants, and street performers"],
+                    ["Camden Market", 51.5416, -0.1465, "Eclectic and rebellious market known for alternative fashion and global foods"],
+                    ["The Shard", 51.5045, -0.0865, "Striking 95-story skyscraper featuring a lofty viewing deck"],
+                    ["Trafalgar Square", 51.5080, -0.1281, "A prominent public square celebrating the Battle of Trafalgar"],
+                    ["Piccadilly Circus", 51.5101, -0.1340, "London's glowing, energetic equivalent to Times Square"],
+                    ["Notting Hill", 51.5095, -0.2056, "Charming district famously characterized by pastel-colored terraced houses"],
+                    ["Kensington Palace", 51.5050, -0.1877, "Historic royal residence set amid the beautiful Kensington Gardens"],
+                    ["Globe Theatre", 51.5081, -0.0971, "A faithful reconstruction of the open-air playhouse designed for Shakespeare"]
+                ]
+            },
+            bangkok: {
+                name: "Bangkok", coords: [13.7563, 100.5018],
+                spots: [
+                    ["Grand Palace", 13.7500, 100.4913, "Magnificent, intricate complex of buildings serving as the royal residence"],
+                    ["Wat Phra Kaew", 13.7516, 100.4927, "The incredibly sacred Temple of the Emerald Buddha"],
+                    ["Wat Arun", 13.7437, 100.4889, "Iconic Temple of Dawn situated beautifully on the riverbank"],
+                    ["Wat Pho", 13.7465, 100.4933, "Sprawling temple complex known for its giant Reclining Buddha"],
+                    ["Chatuchak Market", 13.7997, 100.5504, "One of the world's largest weekend markets with endless stalls"],
+                    ["Khao San Road", 13.7590, 100.4973, "Vibrant, chaotic epicenter of global backpacker nightlife"],
+                    ["MBK Center", 13.7445, 100.5299, "Legendary, massive multi-story shopping mall for bargains"],
+                    ["Siam Paragon", 13.7468, 100.5346, "A sleek, high-end shopping and entertainment complex"],
+                    ["Asiatique", 13.7042, 100.5034, "Spacious open-air night market seamlessly set along the river"],
+                    ["Lumpini Park", 13.7314, 100.5415, "A lush urban oasis famous for its roaming monitor lizards"],
+                    ["Jim Thompson House", 13.7493, 100.5284, "Fascinating museum displaying traditional Thai residential architecture"],
+                    ["Chinatown (Yaowarat)", 13.7411, 100.5084, "A wildly bustling strip celebrated for incredible street food"],
+                    ["Damnoen Saduak", 13.5186, 99.9546, "The most recognized traditional floating market experience"],
+                    ["Erawan Shrine", 13.7441, 100.5404, "A highly revered Hindu shrine located in the commercial center"],
+                    ["Wat Saket", 13.7541, 100.5066, "Also known as the Golden Mount, offering sweeping city views"],
+                    ["IconSiam", 13.7265, 100.5102, "Ultra-luxurious mega-mall situated grandly on the Chao Phraya River"],
+                    ["Wat Traimit", 13.7371, 100.5138, "Temple safeguarding the world's largest solid gold Buddha statue"],
+                    ["Baiyoke Tower", 13.7527, 100.5401, "Once the tallest structure, featuring a revolving observation roof"],
+                    ["Safari World", 13.8643, 100.7029, "An expansive zoo and lively theme park setup for families"],
+                    ["Dream World", 13.9877, 100.6750, "A beloved, vibrant amusement park packed with various rides"],
+                    ["Suan Pakkad Palace", 13.7526, 100.5372, "A tranquil museum of Thai antiques housed within a tropical garden"]
                 ]
             }
-        ];
+        };
 
-        // === 지도 초기화 ===
-        const map = L.map('map', { zoomControl: false }).setView([34.6937, 135.5023], 12);
+        // UI State
+        let selectedDays = 1;
+        let markersMap = {};
 
-        // 줌 컨트롤 위치 우측 상단으로 이동 (좌측 리스트에 의해 가려지지 않도록)
+        // Setup Map (Light theme tiles matching "Antigravity" vibe)
+        const map = L.map('map', { zoomControl: false }).setView([37.5665, 126.9780], 12);
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        // 깔끔하고 모던한 지형도 BaseLayer 추가 (CartoDB Voyager)
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(map);
 
-        const markerGroup = L.featureGroup().addTo(map);
-        let markersMap = {}; // id를 통해 마커에 쉽게 접근하기 위한 Dictionary
+        let markerGroup = L.featureGroup().addTo(map);
 
-        // 커스텀 마커 아이콘 생성 함수 (날짜 번호를 아이콘에 표시)
-        const createCustomIcon = (dayNum) => {
-            return L.divIcon({
-                className: 'custom-day-icon',
-                html: `
-                    <div style="background-color: #3B82F6; color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-size: 15px;">
-                        ${dayNum}
-                    </div>
-                `,
-                iconSize: [34, 34],
-                iconAnchor: [17, 34],
-                popupAnchor: [0, -34]
-            });
-        };
-
-        // DOM Elements
+        // UI Elements
+        const citySelect = document.getElementById('citySelect');
+        const daysBtns = document.querySelectorAll('.day-btn');
         const generateBtn = document.getElementById('generateBtn');
         const itineraryList = document.getElementById('itineraryList');
         const emptyState = document.getElementById('emptyState');
 
-        // === 일정 생성 로직 ===
-        generateBtn.addEventListener('click', () => {
-            // 빈 상태 이미지 제거
-            if (emptyState) emptyState.remove();
+        // Event Listeners
+        citySelect.addEventListener('change', (e) => {
+            const city = db[e.target.value];
+            map.flyTo(city.coords, 12, { duration: 2, easeLinearity: 0.25 });
+        });
 
-            // 기존 리스트 및 지도 마커 초기화
+        daysBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                daysBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-md', 'scale-[1.02]');
+                    b.classList.add('bg-white/60', 'text-gray-600');
+                });
+                const target = e.target;
+                target.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-md', 'scale-[1.02]');
+                target.classList.remove('bg-white/60', 'text-gray-600');
+                selectedDays = parseInt(target.getAttribute('data-days'));
+            });
+        });
+
+        // Time Generator Helper (approximate 3 spots a day: 10AM, 2PM, 6PM)
+        const times = ["10:00 AM", "02:00 PM", "06:00 PM"];
+
+        // Generate Itinerary
+        generateBtn.addEventListener('click', () => {
+            const cityKey = citySelect.value;
+            const cityData = db[cityKey];
+            const neededSpotsCount = selectedDays * 3;
+
+            // Slice the required number of spots
+            const scheduleSpots = cityData.spots.slice(0, neededSpotsCount);
+
+            // Clear UI and Map
+            if (emptyState) emptyState.style.display = 'none';
             itineraryList.innerHTML = '';
             markerGroup.clearLayers();
             markersMap = {};
 
-            // 데이터 순회 및 렌더링
-            itineraryDays.forEach(dayInfo => {
-                // 1) 날짜별 헤더 렌더링
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'mt-10 mb-4 first:mt-0 sticky top-0 z-20 pt-2 pb-2 bg-gray-100/95 backdrop-blur-sm';
-                dayHeader.innerHTML = `
-                    <div class="inline-flex items-center px-4 py-2 bg-white rounded-full shadow-sm border border-blue-100">
-                        <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full mr-2">Day ${dayInfo.day}</span>
-                        <span class="text-gray-800 font-bold text-sm md:text-base">${dayInfo.title}</span>
+            let currentDay = 0;
+            let boundsData = [];
+
+            scheduleSpots.forEach((spot, idx) => {
+                const dayNum = Math.floor(idx / 3) + 1;
+                const timeStr = times[idx % 3];
+                const spotId = `spot_${idx}`;
+
+                // Add Day Header if it's the first spot of the day
+                if (dayNum !== currentDay) {
+                    currentDay = dayNum;
+                    const header = document.createElement('div');
+                    header.className = 'sticky top-0 z-20 pt-4 pb-2 bg-[#f8fafc]/90 backdrop-blur-xl mt-4 first:mt-0';
+                    header.innerHTML = `
+                        <div class="inline-flex items-center px-4 py-1.5 bg-white rounded-2xl shadow-sm border border-gray-200/60">
+                            <i data-lucide="calendar" class="w-4 h-4 text-blue-600 mr-2"></i>
+                            <span class="text-gray-800 font-bold text-sm tracking-wide">Day ${dayNum}</span>
+                        </div>
+                    `;
+                    itineraryList.appendChild(header);
+                    lucide.createIcons({ root: header });
+                }
+
+                // Create Card
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl p-4 mb-3 cursor-pointer group relative overflow-hidden";
+
+                // Fetch beautifully generated image for vibe
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cityData.name + ' ' + spot[0])}?width=400&height=300&nologo=true`;
+
+                card.innerHTML = `
+                    <div class="flex gap-4 relative z-10">
+                        <div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 shadow-sm relative bg-gray-200">
+                            <img src="${imageUrl}" alt="${spot[0]}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <div class="flex-1 min-w-0 py-1">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-bold text-gray-900 text-base line-clamp-1 group-hover:text-blue-600 transition-colors">${spot[0]}</h3>
+                            </div>
+                            <div class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-md mb-2">
+                                <i data-lucide="clock" class="w-3 h-3 mr-1"></i> ${timeStr}
+                            </div>
+                            <p class="text-gray-500 text-xs leading-relaxed line-clamp-2">${spot[3]}</p>
+                        </div>
                     </div>
                 `;
-                itineraryList.appendChild(dayHeader);
+                card.onclick = () => focusOnMap(spotId);
+                itineraryList.appendChild(card);
+                lucide.createIcons({ root: card });
 
-                // 2) 장소 카드 및 지도 마커 렌더링
-                dayInfo.spots.forEach(spot => {
-                    // 왼쪽 리스트에 카드 추가 (디자인 개선: 부드러운 그림자와 호버 이펙트)
-                    const card = document.createElement('div');
-                    card.className = "bg-white rounded-xl shadow-md p-5 mb-4 cursor-pointer border-l-4 border-transparent hover:border-blue-500 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group";
+                // Map Marker
+                const markerHtml = `
+                    <div style="background-color: #2563EB; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 3px solid white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); font-size: 14px; position: relative;">
+                        ${idx + 1}
+                        <div style="position: absolute; bottom: -6px; width: 6px; height: 6px; background: #2563EB; transform: rotate(45deg); z-index: -1;"></div>
+                    </div>
+                `;
 
-                    card.innerHTML = `
-                        <!-- 미세한 배경 효과 -->
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out pointer-events-none"></div>
-                        
-                        <div class="flex justify-between items-start mb-3 relative z-10">
-                            <h3 class="font-bold text-lg text-gray-800 bg-clip-text group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-blue-400 transition-colors">${spot.name}</h3>
-                            <span class="bg-blue-50 text-blue-600 text-xs font-bold px-2.5 py-1.5 rounded-lg whitespace-nowrap border border-blue-100 transform group-hover:scale-105 transition-transform">${spot.time}</span>
-                        </div>
-                        <p class="text-gray-500 text-sm leading-relaxed relative z-10">${spot.desc}</p>
-                    `;
-
-                    card.onclick = () => focusOnMap(spot.id);
-                    itineraryList.appendChild(card);
-
-                    // 오른쪽에 표시할 팝업 컨텐츠
-                    const popupContent = `
-                        <div class="p-1 min-w-[200px]">
-                            <div class="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded inline-block mb-3 border border-blue-100">Day ${dayInfo.day} · ${spot.time}</div>
-                            <h4 class="font-extrabold text-gray-900 text-[15px] mb-1.5">${spot.name}</h4>
-                            <p class="text-[13px] text-gray-600 m-0 leading-snug">${spot.desc}</p>
-                        </div>
-                    `;
-
-                    // 지도에 마커 등록
-                    const marker = L.marker([spot.lat, spot.lng], { icon: createCustomIcon(dayInfo.day) })
-                        .bindPopup(popupContent, { offset: [0, -5], autoPanPadding: [50, 50] })
-                        .addTo(markerGroup);
-
-                    markersMap[spot.id] = marker;
+                const customIcon = L.divIcon({
+                    className: 'custom-pin',
+                    html: markerHtml,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32]
                 });
+
+                const popupHtml = `
+                    <div class="p-2 w-48">
+                        <img src="${imageUrl}" class="w-full h-24 object-cover rounded-lg mb-3 shadow-sm">
+                        <div class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded inline-block mb-2 uppercase tracking-wider">Day ${dayNum} · ${timeStr}</div>
+                        <h4 class="font-bold text-gray-900 text-sm mb-1">${spot[0]}</h4>
+                        <p class="text-xs text-gray-500 m-0 leading-tight">${spot[3]}</p>
+                    </div>
+                `;
+
+                const marker = L.marker([spot[1], spot[2]], { icon: customIcon })
+                    .bindPopup(popupHtml, { autoPanPadding: [50, 50] })
+                    .addTo(markerGroup);
+
+                markersMap[spotId] = marker;
+                boundsData.push([spot[1], spot[2]]);
             });
 
-            // 3) 모든 마커가 잘 보이도록 지도 시야 자동 조절
-            const bounds = markerGroup.getBounds();
-            // 패딩을 넉넉히 줘서 맨 위나 아래에 있는 마커가 잘리지 않게 함 (<50px>여백)
-            map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14, animate: true, duration: 1.2 });
+            // Adjust Map
+            map.fitBounds(boundsData, { padding: [60, 60], maxZoom: 15, animate: true, duration: 1.5 });
 
-            // 4) 로딩/성공 상태 반영 (버튼 UI 업데이트)
-            generateBtn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-                일정 생성 완료! (클릭 시 새로고침)
-            `;
-            generateBtn.className = "w-full bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-bold text-lg py-4 px-6 rounded-xl shadow-md transition-all duration-300 flex justify-center items-center gap-2 mb-6 focus:outline-none focus:ring-4 focus:ring-emerald-300";
+            // Button Vibe
+            generateBtn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i><span>Itinerary Ready! (行程就绪 / 일정 완성)</span>`;
+            generateBtn.classList.remove('bg-gray-900', 'hover:bg-black');
+            generateBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+            generateBtn.style.transform = 'scale(0.98)';
+            setTimeout(() => generateBtn.style.transform = 'scale(1)', 150);
+
+            lucide.createIcons();
         });
 
-        // === 지도 포커싱 및 팝업 이벤트 ===
+        // Focus function
         function focusOnMap(spotId) {
             const targetMarker = markersMap[spotId];
             if (!targetMarker) return;
 
-            const latLng = targetMarker.getLatLng();
-
-            // Leaflet의 FlyTo 애니메이션을 사용하여 부드러운 카메라 무빙 적용
-            map.flyTo(latLng, 16, {
-                duration: 1.5,     // 비행 지속 시간
-                easeLinearity: 0.2 // 곡선 애니메이션 가속도
-            });
-
-            // 이동 애니메이션이 끝난 후 해당 장소 정보 팝업(Information) 출력
-            map.once('moveend', () => {
-                targetMarker.openPopup();
-            });
+            map.flyTo(targetMarker.getLatLng(), 16, { duration: 1.5, easeLinearity: 0.2 });
+            map.once('moveend', () => targetMarker.openPopup());
         }
+
+        // Init initial view based on selected dropdown
+        citySelect.dispatchEvent(new Event('change'));
     </script>
 </body>
 
