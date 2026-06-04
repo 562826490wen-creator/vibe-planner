@@ -1,53 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe Planner Global | AI Travel Scheduler</title>
-
+    <title>Travel Vibe Quiz - 双语版</title>
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
 
-    <!-- Leaflet CSS (CDN) -->
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Custom Font (Pretendard & Inter) -->
     <style>
-        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
         body {
-            font-family: 'Inter', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f8fafc;
-            overflow: hidden;
-            /* Prevent page scroll */
+            font-family: 'Inter', 'Noto Sans SC', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            min-height: 100vh;
+            color: #1a202c;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Glassmorphism Styles */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.03);
+            transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+        .fade-transition {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.4s ease-out;
+        }
+
+        .fade-transition.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .option-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.7);
         }
 
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-color: #3B82F6;
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border-color: #6366f1;
+            /* Indigo 500 */
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .option-card:active {
+            transform: translateY(0);
         }
 
         /* Custom Scrollbar */
@@ -60,518 +74,836 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(156, 163, 175, 0.5);
-            border-radius: 10px;
+            background: #cbd5e1;
+            border-radius: 3px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(107, 114, 128, 0.8);
-        }
-
-        /* Leaflet Overrides */
-        .leaflet-popup-content-wrapper {
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        /* Language Toggle Switch */
+        .lang-switch {
+            position: relative;
+            display: inline-flex;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 9999px;
             padding: 4px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        }
+
+        .lang-switch button {
+            position: relative;
+            z-index: 10;
+            transition: color 0.3s;
+        }
+
+        .lang-switch .active-bg {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            bottom: 4px;
+            width: calc(50% - 4px);
+            background: white;
+            border-radius: 9999px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lang-switch[data-lang="ko"] .active-bg {
+            transform: translateX(100%);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #4f46e5, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-bar-fill {
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Leaflet popups */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .leaflet-popup-content {
-            margin: 12px;
             font-family: inherit;
+            margin: 12px;
         }
 
         .leaflet-container a.leaflet-popup-close-button {
-            top: 12px;
-            right: 12px;
-            color: #6B7280;
-        }
-
-        .leaflet-control-zoom {
-            border: none !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
-            overflow: hidden;
-            border-radius: 12px !important;
-        }
-
-        .leaflet-control-zoom a {
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(10px);
-            color: #374151 !important;
-        }
-
-        /* Initial Load Animations */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-up {
-            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            top: 10px;
+            right: 10px;
+            color: #9CA3AF;
         }
     </style>
 </head>
 
-<body class="relative w-screen h-screen">
+<body class="flex items-center justify-center p-4 py-8 md:p-8">
 
-    <!-- Background Map -->
-    <div id="map" class="absolute inset-0 w-full h-full z-0"></div>
+    <div id="travel-quiz-container"
+        class="glass-panel w-full max-w-2xl rounded-[2rem] overflow-hidden relative min-h-[600px] flex flex-col mx-auto">
+        <!-- Top Nav -->
+        <div class="flex justify-between items-center p-6 md:px-8 border-b border-white/50 relative z-10">
+            <div class="font-extrabold text-xl tracking-tight text-gray-800 flex items-center gap-2">
+                🌍 <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Vibe
+                    Planner</span>
+            </div>
 
-    <!-- Floating UI Panel -->
-    <div
-        class="absolute inset-x-0 bottom-0 md:inset-auto md:top-6 md:left-6 md:bottom-6 md:w-[460px] z-10 flex flex-col pointer-events-none">
+            <!-- Language Toggle -->
+            <div class="lang-switch" data-lang="zh" id="lang-switch-container">
+                <div class="active-bg"></div>
+                <button id="btn-lang-zh" class="px-4 py-1.5 text-sm font-bold rounded-full w-[72px] text-indigo-600"
+                    onclick="setLanguage('zh')">中文</button>
+                <button id="btn-lang-ko" class="px-4 py-1.5 text-sm font-bold rounded-full w-[72px] text-gray-500"
+                    onclick="setLanguage('ko')">한국어</button>
+            </div>
+        </div>
 
-        <!-- Main Panel -->
+        <!-- Dynamic Content Area -->
+        <div id="app-content" class="flex-1 flex flex-col p-6 md:p-8 overflow-y-auto relative z-10 fade-transition">
+            <!-- Content Rendered by JS -->
+        </div>
+
+        <!-- Decorative Background Elements -->
         <div
-            class="glass-panel flex-1 rounded-t-3xl md:rounded-3xl flex flex-col pointer-events-auto overflow-hidden animate-fade-up">
-
-            <!-- Header & Controls -->
-            <div class="p-6 pb-4 border-b border-white/40 bg-white/30">
-                <div class="flex items-center justify-between mb-5">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/30">
-                            <i data-lucide="plane-takeoff" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900 tracking-tight leading-tight">Vibe Planner</h1>
-                            <p class="text-xs text-blue-600 font-semibold tracking-wider uppercase">Global Edition</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Inputs: City & Days -->
-                <div class="space-y-4">
-                    <!-- City Select -->
-                    <div class="relative">
-                        <i data-lucide="map-pin"
-                            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                        <select id="citySelect"
-                            class="w-full bg-white/60 border border-white/50 text-gray-800 text-base rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 block p-3.5 pl-12 appearance-none outline-none font-medium transition-all cursor-pointer shadow-sm">
-                            <option value="seoul">🇰🇷 Seoul (首尔 / 서울)</option>
-                            <option value="osaka">🇯🇵 Osaka (大阪 / 오사카)</option>
-                            <option value="tokyo">🇯🇵 Tokyo (东京 / 도쿄)</option>
-                            <option value="paris">🇫🇷 Paris (巴黎 / 파리)</option>
-                            <option value="newyork">🇺🇸 New York (纽约 / 뉴욕)</option>
-                            <option value="london">🇬🇧 London (伦敦 / 런던)</option>
-                            <option value="bangkok">🇹🇭 Bangkok (曼谷 / 방콕)</option>
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
-                    </div>
-
-                    <!-- Days Select -->
-                    <div>
-                        <div class="flex items-center justify-between mb-2 px-1">
-                            <span class="text-sm font-semibold text-gray-600">Duration (时长 / 기간)</span>
-                        </div>
-                        <div class="grid grid-cols-4 gap-2" id="daysGroup">
-                            <button
-                                class="day-btn active bg-blue-600 text-white font-bold py-2.5 rounded-xl shadow-md transition-all scale-[1.02]"
-                                data-days="1">1 Day</button>
-                            <button
-                                class="day-btn bg-white/60 text-gray-600 hover:bg-white font-medium py-2.5 rounded-xl border border-white/50 transition-all border-transparent"
-                                data-days="3">3 Days</button>
-                            <button
-                                class="day-btn bg-white/60 text-gray-600 hover:bg-white font-medium py-2.5 rounded-xl border border-white/50 transition-all border-transparent"
-                                data-days="5">5 Days</button>
-                            <button
-                                class="day-btn bg-white/60 text-gray-600 hover:bg-white font-medium py-2.5 rounded-xl border border-white/50 transition-all border-transparent"
-                                data-days="7">7 Days</button>
-                        </div>
-                    </div>
-
-                    <button id="generateBtn"
-                        class="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 flex justify-center items-center gap-2 mt-2">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
-                        <span>Generate Itinerary (生成行程 / 일정 생성)</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- List Area -->
-            <div id="itineraryList"
-                class="flex-1 overflow-y-auto p-5 pb-20 md:pb-5 space-y-2 bg-gradient-to-b from-transparent to-white/10 relative">
-                <!-- Empty State -->
-                <div class="h-full flex flex-col items-center justify-center text-center px-4" id="emptyState">
-                    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4 shadow-inner">
-                        <i data-lucide="compass" class="w-10 h-10 text-blue-500 opacity-80"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-800 mb-1">Ready to explore?</h3>
-                    <p class="text-sm text-gray-500">Pick a city and duration, then tap generate to visualize your smart
-                        itinerary.</p>
-                </div>
-            </div>
+            class="absolute top-[-10%] right-[-10%] w-64 h-64 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none">
+        </div>
+        <div
+            class="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none">
         </div>
     </div>
 
-    <!-- Leaflet JS (CDN) -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- JavaScript Data and Logic -->
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        // --- DATA ---
+        const i18n = {
+            landingTitle: { zh: "寻找你的专属旅行DNA", ko: "당신의 여행 DNA를 찾아보세요" },
+            landingDesc: { zh: "7道题测出最适合你的目的地与必备旅行神器", ko: "7개의 질문으로 알아보는 나만의 완벽한 여행지와 필수 아이템" },
+            startBtn: { zh: "开始测试", ko: "테스트 시작하기" },
+            retakeBtn: { zh: "重新测试", ko: "다시 테스트하기" },
+            callout: { zh: "🎁 专属福利：购买上述装备，立享 8 折优惠！", ko: "🎁 특별 혜택: 위 필수 아이템 구매 시 20% 즉시 할인!" },
+            taobaoBtn: { zh: "在淘宝购买", ko: "타오바오에서 구매" },
+            amazonBtn: { zh: "在 Amazon 购买", ko: "아마존에서 구매" },
+            matchResult: { zh: "最适合你的旅行地是", ko: "당신에게 가장 완벽한 여행지는" },
+            recommendedProducts: { zh: "必备旅行神器", ko: "필수 추천 아이템" },
+            osakaPlannerTitle: { zh: "专属行程地图 (Vibe Planner)", ko: "전용 일정 지도 (Vibe Planner)" },
+            simplePlannerTitle: { zh: "推荐行程速览", ko: "추천 일정 미리보기" },
+            transitionText: {
+                zh: "🗺️ 专属行程已生成！建议您备齐以下刚需装备：",
+                ko: "🗺️ 전용 일정이 생성되었습니다! 아래 필수 장비를 준비해보세요:"
+            }
+        };
 
-        // Data Definition (Compact format: [Name, Lat, Lng, Description])
-        // Each city has 21 spots to support up to 7 days (3 spots per day)
-        const db = {
-            seoul: {
-                name: "Seoul", coords: [37.5665, 126.9780],
-                spots: [
-                    ["Gyeongbokgung Palace", 37.5796, 126.9770, "Historic royal palace of the Joseon dynasty"],
-                    ["N Seoul Tower", 37.5512, 126.9882, "Iconic tower with panoramic city views"],
-                    ["Bukchon Hanok Village", 37.5826, 126.9831, "Traditional alleys with hanok houses"],
-                    ["Myeongdong", 37.5636, 126.9832, "Bustling shopping street & street food"],
-                    ["Dongdaemun Design Plaza", 37.5693, 127.0093, "Futuristic design landmark by Zaha Hadid"],
-                    ["Hongdae", 37.5556, 126.9242, "Trendy district known for youth culture & indie arts"],
-                    ["Gangnam District", 37.4979, 127.0276, "Upscale shopping, dining, and nightlife"],
-                    ["Lotte World", 37.5113, 127.0980, "Massive indoor and outdoor theme park"],
-                    ["Starfield Library", 37.5113, 127.0595, "Stunning public library inside COEX mall"],
-                    ["Han River Park", 37.5284, 126.9330, "Riverside park perfect for relaxing and cycling"],
-                    ["Changdeokgung", 37.5794, 126.9910, "UNESCO World Heritage palace with secret garden"],
-                    ["Insadong", 37.5743, 126.9858, "Heart of traditional Korean arts and tea houses"],
-                    ["Itaewon", 37.5340, 126.9940, "Diverse international dining and nightlife district"],
-                    ["Gwangjang Market", 37.5702, 126.9990, "Famous traditional market for authentic Korean food"],
-                    ["National Museum of Korea", 37.5239, 126.9803, "Extensive exhibits of Korean history and art"],
-                    ["Seoul Forest", 37.5444, 127.0374, "Large urban park with deer and beautiful trails"],
-                    ["Cheonggyecheon", 37.5681, 126.9787, "Beautifully restored urban stream walkway"],
-                    ["Namsangol Hanok Village", 37.5592, 126.9937, "Traditional village setting at the foot of Namsan"],
-                    ["Seokchon Lake", 37.5097, 127.1009, "Scenic lake surrounded by cherry blossoms in spring"],
-                    ["Jongmyo Shrine", 37.5744, 126.9942, "Confucian shrine dedicated to Joseon kings"],
-                    ["Ikseondong", 37.5748, 126.9899, "Trendy cafe culture inside vintage hanok alleys"]
+        const questions = [
+            {
+                q: { zh: "你理想中的旅行节奏是？", ko: "당신이 이상적으로 생각하는 여행의 템포는?" },
+                options: [
+                    { id: "A", zh: "躺在沙滩喝椰子水", ko: "해변에 누워 코코넛 주스 마시기" },
+                    { id: "B", zh: "去雪地里撒欢", ko: "하얀 눈밭에서 신나게 뛰어놀기" },
+                    { id: "C", zh: "用双脚丈量雪山草甸", ko: "내 발로 직접 설산과 초원을 누비기" },
+                    { id: "D", zh: "繁华都市打卡美食和乐园", ko: "번화한 도시에서 맛집과 테마파크 탐방" },
+                    { id: "E", zh: "探寻千年古迹与历史", ko: "천년의 고적과 역사 탐색하기" },
+                    { id: "F", zh: "租车自驾在荒漠公路", ko: "렌터카를 빌려 황량한 도로 자가운전하기" }
                 ]
             },
-            osaka: {
-                name: "Osaka", coords: [34.6937, 135.5023],
-                spots: [
-                    ["Dotonbori", 34.6687, 135.5013, "Neon-lit entertainment and street food district"],
-                    ["Osaka Castle", 34.6873, 135.5262, "Historic landmark surrounded by a beautiful park"],
-                    ["Universal Studios Japan", 34.6654, 135.4323, "World-class theme park with immersive areas"],
-                    ["Umeda Sky Building", 34.7053, 135.4896, "Spectacular floating garden observatory"],
-                    ["Osaka Aquarium Kaiyukan", 34.6545, 135.4290, "One of the world's largest public aquariums"],
-                    ["Tsutenkaku", 34.6525, 135.5063, "Retro observation tower in Shinsekai"],
-                    ["Shitennoji Temple", 34.6533, 135.5165, "One of Japan's oldest Buddhist temples"],
-                    ["Kuromon Market", 34.6654, 135.5068, "Osaka's kitchen, famous for fresh seafood"],
-                    ["Abeno Harukas", 34.6458, 135.5140, "Tallest skyscraper in Japan with premium views"],
-                    ["Tempozan Ferris Wheel", 34.6562, 135.4312, "Giant Ferris wheel offering bay views"],
-                    ["Namba Yasaka Shrine", 34.6613, 135.4967, "Unique shrine featuring a massive lion head stage"],
-                    ["Sumiyoshi Taisha", 34.6127, 135.4925, "Ancient Shinto shrine with unique architecture"],
-                    ["Nakanoshima Park", 34.6934, 135.4984, "River island with neo-renaissance buildings and roses"],
-                    ["Spa World", 34.6500, 135.5052, "Massive bathhouse with globally themed zones"],
-                    ["Nippombashi Den Den Town", 34.6599, 135.5058, "Osaka's hub for electronics, anime, and pop culture"],
-                    ["Americamura", 34.6718, 135.4981, "Youth culture and trendy fashion district"],
-                    ["Hozenji Yokocho", 34.6678, 135.5017, "Atmospheric traditional narrow alleyway"],
-                    ["Osaka Mint Bureau", 34.6953, 135.5218, "Famous for its spectacular cherry blossom passage"],
-                    ["Tennoji Zoo", 34.6508, 135.5085, "Historic urban zoo nestled in the city center"],
-                    ["National Museum of Art", 34.6908, 135.4916, "Impressive subterranean contemporary art museum"],
-                    ["Osaka Museum of Housing", 34.7103, 135.5143, "Recreated Edo period streets and living history"]
+            {
+                q: { zh: "选择一幅最吸引你的画面？", ko: "가장 끌리는 풍경을 선택한다면?" },
+                options: [
+                    { id: "A", zh: "椰林斜阳与粉色落日", ko: "야자수와 핑크빛 노을" },
+                    { id: "B", zh: "漫天飞舞的雪花与梦幻极光", ko: "흩날리는 눈꽃과 환상적인 오로라" },
+                    { id: "C", zh: "巍峨的雪山日照金山", ko: "웅장한 설산의 일조금산" },
+                    { id: "D", zh: "复古霓虹灯与街头小吃", ko: "레트로 네온사인과 길거리 음식" },
+                    { id: "E", zh: "神秘的古寺与金字塔", ko: "신비로운 고찰과 피라미드" },
+                    { id: "F", zh: "望不到尽头的红土荒漠", ko: "끝이 보이지 않는 붉은 사막" }
                 ]
             },
-            tokyo: {
-                name: "Tokyo", coords: [35.6762, 139.6503],
-                spots: [
-                    ["Senso-ji Temple", 35.7148, 139.7967, "Tokyo's oldest and most significant Buddhist temple"],
-                    ["Tokyo Skytree", 35.7100, 139.8107, "Iconic broadcasting tower offering sweeping views"],
-                    ["Shibuya Crossing", 35.6595, 139.7005, "The legendary, busiest pedestrian crossing in the world"],
-                    ["Meiji Jingu", 35.6690, 139.6993, "Serene Shinto shrine enveloped by a lush forest"],
-                    ["Tokyo Tower", 35.6586, 139.7454, "Classic red-and-white communications and observation tower"],
-                    ["Shinjuku Gyoen", 35.6852, 139.7101, "A massive, beautiful national garden blending styles"],
-                    ["Akihabara", 35.6983, 139.7731, "The global epicenter of anime, gaming, and electronics"],
-                    ["Tsukiji Outer Market", 35.6646, 139.7707, "World-famous destination for supreme street food and seafood"],
-                    ["Ueno Park", 35.7141, 139.7736, "Vast public park surrounded by museums and cherry trees"],
-                    ["Odaiba", 35.6248, 139.7766, "Futuristic high-tech entertainment hub on an artificial island"],
-                    ["Roppongi Hills", 35.6605, 139.7291, "Upscale mega-complex for shopping, dining, and art"],
-                    ["Imperial Palace", 35.6852, 139.7528, "The primary residence of the Emperor of Japan"],
-                    ["Harajuku / Takeshita St", 35.6702, 139.7027, "The vibrant heart of kawaii and extreme youth fashion"],
-                    ["Ginza", 35.6712, 139.7665, "Tokyo's premier luxury shopping and dining district"],
-                    ["Yoyogi Park", 35.6717, 139.6949, "Spacious park known for weekend gatherings and events"],
-                    ["TeamLab Planets", 35.6486, 139.7898, "Breathtaking interactive digital art museum in Toyosu"],
-                    ["Nakamise Shopping St", 35.7126, 139.7965, "Traditional souvenir street leading to Senso-ji"],
-                    ["Nakano Broadway", 35.7088, 139.6657, "Dense multi-story shopping complex for subcultures"],
-                    ["Tokyo National Museum", 35.7187, 139.7765, "Extensive gallery of ancient Japanese and Asian art"],
-                    ["Edo-Tokyo Museum", 35.6963, 139.7937, "Fascinating museum detailing the history of Tokyo"],
-                    ["Ghibli Museum", 35.6685, 139.5704, "Whimsical museum dedicated to Studio Ghibli's animations"]
+            {
+                q: { zh: "出门旅行你最不能忍受什么？", ko: "여행 갈 때 가장 참을 수 없는 것은?" },
+                options: [
+                    { id: "A", zh: "皮肤晒伤脱皮", ko: "피부가 햇빛에 타서 허물 벗겨지는 것" },
+                    { id: "B", zh: "冻得手脚发麻", ko: "손발이 꽁꽁 얼어 감각이 없어지는 것" },
+                    { id: "C", zh: "徒步体力崩溃膝盖痛", ko: "트레킹 중 체력 방전과 무릎 통증" },
+                    { id: "D", zh: "手机没电断网失联", ko: "배터리 방전 및 인터넷 단절로 연락 두절" },
+                    { id: "E", zh: "语言不通文化冲突", ko: "언어가 통하지 않아 생기는 문화적 갈등" },
+                    { id: "F", zh: "爆胎或没有离线地图", ko: "타이어 펑크 또는 오프라인 지도가 없는 상황" }
                 ]
             },
-            paris: {
-                name: "Paris", coords: [48.8566, 2.3522],
-                spots: [
-                    ["Eiffel Tower", 48.8584, 2.2945, "The iconic wrought-iron lattice tower on the Champ de Mars"],
-                    ["Louvre Museum", 48.8606, 2.3376, "World's largest art museum, home to the Mona Lisa"],
-                    ["Notre-Dame de Paris", 48.8529, 2.3499, "Masterpiece of French Gothic architecture"],
-                    ["Arc de Triomphe", 48.8738, 2.2950, "Monument honoring those who fought and died for France"],
-                    ["Sacré-Cœur", 48.8867, 2.3431, "White-domed basilica situated on the Montmartre hill"],
-                    ["Champs-Élysées", 48.8698, 2.3075, "Famous, glamorous avenue for theaters and shopping"],
-                    ["Musée d'Orsay", 48.8600, 2.3266, "Vast collection of Impressionist art in a former railway station"],
-                    ["Panthéon", 48.8462, 2.3458, "Neoclassical mausoleum containing remains of distinguished citizens"],
-                    ["Sainte-Chapelle", 48.8554, 2.3450, "Royal chapel boasting stunning 13th-century stained glass"],
-                    ["Luxembourg Gardens", 48.8462, 2.3372, "Serene formal gardens created in 1612 by Marie de' Medici"],
-                    ["Centre Pompidou", 48.8606, 2.3522, "High-tech architectural complex housing modern art collections"],
-                    ["Montmartre", 48.8863, 2.3430, "A large hill retaining a village atmosphere, historically an artists' hub"],
-                    ["Palace of Versailles", 48.8048, 2.1203, "Opulent royal chateau that was the principal royal residence"],
-                    ["Palais Garnier", 48.8719, 2.3316, "Incredibly opulent 19th-century masterpiece opera house"],
-                    ["Seine River Cruise", 48.8602, 2.3255, "Scenic boat tour passing central Paris's most iconic landmarks"],
-                    ["Les Invalides", 48.8560, 2.3126, "Military history museums and the tomb of Napoleon Bonaparte"],
-                    ["Tuileries Garden", 48.8635, 2.3276, "Elegant public garden located between the Louvre and Place de la Concorde"],
-                    ["Catacombs of Paris", 48.8338, 2.3324, "Fascinating underground ossuaries holding the remains of millions"],
-                    ["Place de la Concorde", 48.8656, 2.3212, "Major public square adorned with a glorious Egyptian obelisk"],
-                    ["Moulin Rouge", 48.8841, 2.3323, "The world-famous cabaret club known as the birthplace of the can-can"],
-                    ["Grand Palais", 48.8661, 2.3125, "Historic site, exhibition hall and museum complex with a glass roof"]
+            {
+                q: { zh: "旅行行李箱里，你必须带上的特殊物品是？", ko: "캐리어에 꼭 챙겨야 하는 나만의 필수 아이템은?" },
+                options: [
+                    { id: "A", zh: "泳装与防水袋", ko: "수영복과 방수팩" },
+                    { id: "B", zh: "强力暖宝宝", ko: "강력 핫팩" },
+                    { id: "C", zh: "护膝与登山杖", ko: "무릎 보호대와 등산스틱" },
+                    { id: "D", zh: "多个充电宝与多国插头", ko: "멀티 보조배터리와 멀티 어댑터" },
+                    { id: "E", zh: "翻译机与历史攻略书", ko: "번역기와 역사 가이드북" },
+                    { id: "F", zh: "车载手机支架与应急工具", ko: "차량용 스마트폰 거치대와 비상 공구" }
                 ]
             },
-            newyork: {
-                name: "New York", coords: [40.7128, -74.0060],
-                spots: [
-                    ["Statue of Liberty", 40.6892, -74.0445, "Colossal neoclassical sculpture and universal symbol of freedom"],
-                    ["Central Park", 40.7812, -73.9665, "Massive, iconic urban park set in the middle of Manhattan"],
-                    ["Times Square", 40.7580, -73.9855, "Bustling, neon-lit commercial intersection and entertainment center"],
-                    ["Empire State Building", 40.7484, -73.9857, "Legendary Art Deco skyscraper towering over Midtown Manhattan"],
-                    ["Brooklyn Bridge", 40.7061, -73.9969, "Historic neo-Gothic suspension bridge connecting Manhattan and Brooklyn"],
-                    ["The Met", 40.7794, -73.9632, "Metropolitan Museum of Art, the largest art museum in the Americas"],
-                    ["MoMA", 40.7614, -73.9776, "Museum of Modern Art, featuring extraordinary contemporary collections"],
-                    ["High Line", 40.7480, -74.0048, "Unique elevated linear park established on a former railway trestle"],
-                    ["Top of the Rock", 40.7593, -73.9794, "Observatory deck at Rockefeller Center with unmatched city views"],
-                    ["One World Observatory", 40.7127, -74.0134, "Breathtaking views from the tallest building in the Western Hemisphere"],
-                    ["Grand Central Terminal", 40.7527, -73.9772, "Historic, exquisitely detailed commuter rail terminal"],
-                    ["Broadway", 40.7590, -73.9845, "The beating heart of the American commercial theatrical industry"],
-                    ["9/11 Memorial", 40.7115, -74.0133, "Poignant memorial and museum commemorating the September 11 attacks"],
-                    ["Wall Street", 40.7074, -74.0113, "The bustling hub of the global financial district"],
-                    ["Washington Square Park", 40.7308, -73.9973, "Famous public park dominated by the Washington Arch"],
-                    ["Natural History Museum", 40.7813, -73.9740, "Renowned institution dedicated to discovering human cultures and the natural world"],
-                    ["Guggenheim Museum", 40.7830, -73.9590, "Modern and contemporary art museum housed in a Frank Lloyd Wright masterpiece"],
-                    ["Battery Park", 40.7033, -74.0170, "Beautiful public park at the southern tip of Manhattan Island"],
-                    ["Chelsea Market", 40.7420, -74.0048, "Vibrant indoor food hall, shopping mall, and television production facility"],
-                    ["Flatiron Building", 40.7411, -73.9897, "Distinctive, iconic triangular skyscraper built in 1902"],
-                    ["St. Patrick's Cathedral", 40.7586, -73.9768, "Decorated Neo-Gothic-style Roman Catholic cathedral church"]
+            {
+                q: { zh: "如果有一笔额外预算，你选？", ko: "만약 여유 예산이 생긴다면 어디에 쓰겠는가?" },
+                options: [
+                    { id: "A", zh: "住推门见海的度假酒店", ko: "문 열면 바다가 보이는 리조트 숙박" },
+                    { id: "B", zh: "请个私教畅滑一天雪", ko: "개인 강사를 고용해 하루 종일 스키 타기" },
+                    { id: "C", zh: "雇当地向导带入无人区", ko: "현지 가이드를 고용해 무인도나 비경 탐험" },
+                    { id: "D", zh: "买环球影城VIP免排队卡", ko: "유니버설 스튜디오 VIP 패스트패스 구매" },
+                    { id: "E", zh: "请专业讲师包场讲解博物馆", ko: "전문 강사의 박물관 프라이빗 도슨트 투어" },
+                    { id: "F", zh: "升级租一辆硬派越野车", ko: "오프로드 SUV 차량으로 렌터카 업그레이드" }
                 ]
             },
-            london: {
-                name: "London", coords: [51.5074, -0.1278],
-                spots: [
-                    ["Big Ben", 51.5007, -0.1246, "The globally recognizable striking clock at the Palace of Westminster"],
-                    ["Tower of London", 51.5081, -0.0759, "Historic fortress on the Thames housing the Crown Jewels"],
-                    ["British Museum", 51.5194, -0.1270, "A vast, comprehensive museum dedicated to human history and culture"],
-                    ["London Eye", 51.5033, -0.1195, "Giant, iconic observation wheel operating on the South Bank"],
-                    ["Buckingham Palace", 51.5014, -0.1419, "The grand London residence and administrative headquarters of the monarch"],
-                    ["Tower Bridge", 51.5055, -0.0754, "A defining 19th-century combined bascule and suspension bridge"],
-                    ["Westminster Abbey", 51.4993, -0.1273, "Majestic royal church offering daily services and centuries of history"],
-                    ["Natural History Museum", 51.4967, -0.1764, "Exhibits a vast range of specimens from various segments of natural history"],
-                    ["V&A Museum", 51.4966, -0.1722, "Victoria and Albert Museum, the world's leading museum of art and design"],
-                    ["Hyde Park", 51.5073, -0.1657, "One of the largest, most famous parks stretching across central London"],
-                    ["St Paul's Cathedral", 51.5138, -0.0984, "Magnificent Anglican cathedral characterized by its massive dome"],
-                    ["Tate Modern", 51.5076, -0.0994, "World-renowned modern art gallery housed in a former power station"],
-                    ["National Gallery", 51.5089, -0.1283, "An art museum in Trafalgar Square featuring European masterpieces"],
-                    ["Covent Garden", 51.5117, -0.1240, "Vibrant district featuring upscale shops, restaurants, and street performers"],
-                    ["Camden Market", 51.5416, -0.1465, "Eclectic and rebellious market known for alternative fashion and global foods"],
-                    ["The Shard", 51.5045, -0.0865, "Striking 95-story skyscraper featuring a lofty viewing deck"],
-                    ["Trafalgar Square", 51.5080, -0.1281, "A prominent public square celebrating the Battle of Trafalgar"],
-                    ["Piccadilly Circus", 51.5101, -0.1340, "London's glowing, energetic equivalent to Times Square"],
-                    ["Notting Hill", 51.5095, -0.2056, "Charming district famously characterized by pastel-colored terraced houses"],
-                    ["Kensington Palace", 51.5050, -0.1877, "Historic royal residence set amid the beautiful Kensington Gardens"],
-                    ["Globe Theatre", 51.5081, -0.0971, "A faithful reconstruction of the open-air playhouse designed for Shakespeare"]
+            {
+                q: { zh: "你最期待在旅途中与谁同行？", ko: "여행지에서 누구와 동행하고 싶은가?" },
+                options: [
+                    { id: "A", zh: "爱人或闺蜜", ko: "연인 또는 절친" },
+                    { id: "B", zh: "同样热爱冰雪的滑雪搭子", ko: "눈을 사랑하는 스키 메이트" },
+                    { id: "C", zh: "靠谱的户外驴友", ko: "든든한 아웃도어 전문가" },
+                    { id: "D", zh: "准备去疯狂购物扫货的朋友", ko: "미친 듯이 쇼핑을 즐길 쇼핑 메이트" },
+                    { id: "E", zh: "喜欢安静思考的历史同好", ko: "조용히 생각하기를 좋아하는 역사 동호인" },
+                    { id: "F", zh: "喜欢音乐和自由的自驾独行侠", ko: "음악과 자유를 사랑하는 드라이브 나홀로족" }
                 ]
             },
-            bangkok: {
-                name: "Bangkok", coords: [13.7563, 100.5018],
+            {
+                q: { zh: "你最期待带回什么纪念品？", ko: "여행에서 가장 가져오고 싶은 기념품은?" },
+                options: [
+                    { id: "A", zh: "贝壳手链与精油", ko: "조개껍데기 팔찌와 아로마 오일" },
+                    { id: "B", zh: "极光明信片", ko: "오로라 엽서" },
+                    { id: "C", zh: "一双沾满泥土的登山鞋", ko: "흙이 묻은 나만의 등산화" },
+                    { id: "D", zh: "动漫手办与美妆战利品", ko: "애니메이션 피규어와 뷰티 전리품" },
+                    { id: "E", zh: "仿古手工艺品或古籍", ko: "전통 수공예품 또는 고서적" },
+                    { id: "F", zh: "一枚写着公路编号的徽章", ko: "도로 번호가 새겨진 엠블럼 배지" }
+                ]
+            }
+        ];
+
+        // --- OSAKA VIBE PLANNER DATA ---
+        const osakaItineraryData = [
+            {
+                day: 1,
+                title: { zh: "第1天：抵达与商业中心初体验", ko: "1일차: 도착과 상업의 중심지 맛보기" },
                 spots: [
-                    ["Grand Palace", 13.7500, 100.4913, "Magnificent, intricate complex of buildings serving as the royal residence"],
-                    ["Wat Phra Kaew", 13.7516, 100.4927, "The incredibly sacred Temple of the Emerald Buddha"],
-                    ["Wat Arun", 13.7437, 100.4889, "Iconic Temple of Dawn situated beautifully on the riverbank"],
-                    ["Wat Pho", 13.7465, 100.4933, "Sprawling temple complex known for its giant Reclining Buddha"],
-                    ["Chatuchak Market", 13.7997, 100.5504, "One of the world's largest weekend markets with endless stalls"],
-                    ["Khao San Road", 13.7590, 100.4973, "Vibrant, chaotic epicenter of global backpacker nightlife"],
-                    ["MBK Center", 13.7445, 100.5299, "Legendary, massive multi-story shopping mall for bargains"],
-                    ["Siam Paragon", 13.7468, 100.5346, "A sleek, high-end shopping and entertainment complex"],
-                    ["Asiatique", 13.7042, 100.5034, "Spacious open-air night market seamlessly set along the river"],
-                    ["Lumpini Park", 13.7314, 100.5415, "A lush urban oasis famous for its roaming monitor lizards"],
-                    ["Jim Thompson House", 13.7493, 100.5284, "Fascinating museum displaying traditional Thai residential architecture"],
-                    ["Chinatown (Yaowarat)", 13.7411, 100.5084, "A wildly bustling strip celebrated for incredible street food"],
-                    ["Damnoen Saduak", 13.5186, 99.9546, "The most recognized traditional floating market experience"],
-                    ["Erawan Shrine", 13.7441, 100.5404, "A highly revered Hindu shrine located in the commercial center"],
-                    ["Wat Saket", 13.7541, 100.5066, "Also known as the Golden Mount, offering sweeping city views"],
-                    ["IconSiam", 13.7265, 100.5102, "Ultra-luxurious mega-mall situated grandly on the Chao Phraya River"],
-                    ["Wat Traimit", 13.7371, 100.5138, "Temple safeguarding the world's largest solid gold Buddha statue"],
-                    ["Baiyoke Tower", 13.7527, 100.5401, "Once the tallest structure, featuring a revolving observation roof"],
-                    ["Safari World", 13.8643, 100.7029, "An expansive zoo and lively theme park setup for families"],
-                    ["Dream World", 13.9877, 100.6750, "A beloved, vibrant amusement park packed with various rides"],
-                    ["Suan Pakkad Palace", 13.7526, 100.5372, "A tranquil museum of Thai antiques housed within a tropical garden"]
+                    { id: "spot1", time: "14:00", name: { zh: "黑门市场", ko: "구로몬 시장" }, desc: { zh: "大阪的厨房，海鲜与街头美食", ko: "오사카의 부엌, 신선한 해산물과 다채로운 길거리 음식 탐방" }, lat: 34.6654, lng: 135.5068 },
+                    { id: "spot2", time: "18:00", name: { zh: "道顿堀", ko: "도톤보리" }, desc: { zh: "霓虹闪烁与格力高标志前打卡", ko: "화려한 네온사인과 글리코상 앞 필수 인증샷 찰칵!" }, lat: 34.6687, lng: 135.5013 }
+                ]
+            },
+            {
+                day: 2,
+                title: { zh: "第2天：历史与浪漫的天际线", ko: "2일차: 역사와 낭만적인 스카이라인" },
+                spots: [
+                    { id: "spot3", time: "10:00", name: { zh: "大阪城", ko: "오사카성" }, desc: { zh: "美丽的雄伟天守阁与历史地标", ko: "아름다운 천수각과 역사 깊은 오사카의 상징적 랜드마크" }, lat: 34.6873, lng: 135.5262 },
+                    { id: "spot4", time: "19:00", name: { zh: "梅田蓝天大厦", ko: "우메다 스카이 빌딩" }, desc: { zh: "在空中庭园展望台欣赏梦幻夜景", ko: "아찔한 공중정원 전망대에서 감상하는 환상적인 도심 야경" }, lat: 34.7053, lng: 135.4896 }
+                ]
+            },
+            {
+                day: 3,
+                title: { zh: "第3天：主题乐园冒险与海洋之秘", ko: "3일차: 테마파크 어드벤처 & 바다의 신비" },
+                spots: [
+                    { id: "spot5", time: "09:00", name: { zh: "日本环球影城 (USJ)", ko: "유니버설 스튜디오 재팬" }, desc: { zh: "令人兴奋的游乐世界！", ko: "도착부터 설렘! 멈추지 않는 짜릿한 어트랙션의 세계" }, lat: 34.6654, lng: 135.4323 },
+                    { id: "spot6", time: "18:00", name: { zh: "海游馆", ko: "가이유칸 (해유관)" }, desc: { zh: "在世界最大规模水族馆遇见鲸鲨", ko: "세계 최대 규모의 수족관 속 신비로운 고래상어 만나기" }, lat: 34.6545, lng: 135.4290 }
+                ]
+            },
+            {
+                day: 4,
+                title: { zh: "第4天：复古与经典，旅程圆满结束", ko: "4일차: 복고와 클래식, 여정의 마무리" },
+                spots: [
+                    { id: "spot7", time: "10:00", name: { zh: "四天王寺", ko: "시텐노지" }, desc: { zh: "历经千年的日本最古老寺院", ko: "천년의 세월을 품은, 일본에서 제일 오래된 역사 깊은 사찰" }, lat: 34.6533, lng: 135.5165 },
+                    { id: "spot8", time: "12:00", name: { zh: "天王寺动物园", ko: "텐노지 동물원" }, desc: { zh: "高楼林立中的生态动物园", ko: "빌딩 숲 한가운데 자리잡은 도심 속 생태 동물원 산책" }, lat: 34.6508, lng: 135.5085 },
+                    { id: "spot9", time: "14:00", name: { zh: "通天阁 & 新世界", ko: "츠텐카쿠 & 신세카이" }, desc: { zh: "充满复古情调的小巷与脆皮炸串", ko: "레트로 감성 골목 코스, 본고장의 바삭한 쿠시카츠 먹방" }, lat: 34.6525, lng: 135.5063 },
+                    { id: "spot10", time: "16:00", name: { zh: "阿倍野 Harukas", ko: "아베노 하루카스" }, desc: { zh: "在Harukas300展望台压轴收尾", ko: "오사카가 한눈에! 하루카스 300에서 압도적인 전망으로 마무리" }, lat: 34.6458, lng: 135.5140 }
+                ]
+            }
+        ];
+
+        const resultsData = {
+            "A": {
+                dest: { zh: "泰国 · 普吉岛", ko: "태국 푸켓" },
+                image: "https://images.unsplash.com/photo-1589394815804-964ce0fa58f4?auto=format&fit=crop&q=80&w=800",
+                routePlan: [
+                    { day: 1, zh: "抵达普吉，傍晚漫步芭东海滩，享受海鲜大餐", ko: "푸켓 도착, 저녁 파통 해변 산책 및 씨푸드 디너" },
+                    { day: 2, zh: "包船出海跳岛游（皮皮岛/皇帝岛），体验浮潜", ko: "피피섬/라차섬 호핑투어 및 스노클링 체험" },
+                    { day: 3, zh: "丛林飞跃或大象保护区体验，下午享受泰式SPA", ko: "정글 어드벤처 또는 코끼리 보호구역 체험, 오후 타이 마사지" }
+                ],
+                products: [
+                    {
+                        name: { zh: "手机触屏潜水防水袋", ko: "스마트폰 터치 방수팩" },
+                        desc: { zh: "出海浮潜刚需，防止手机进水报废", ko: "호핑투어 필수템! 스마트폰 침수 방지" },
+                        taobaoUrl: "https://s.taobao.com/search?q=手机潜水防水袋+触屏",
+                        amazonUrl: "https://www.amazon.com/s?k=waterproof+phone+pouch+floating",
+                        image: "https://images.unsplash.com/photo-1622434641406-a158123450f9?auto=format&fit=crop&q=80&w=400"
+                    },
+                    {
+                        name: { zh: "SPF50+户外防晒霜", ko: "SPF50+ 아웃도어 자외선 차단제" },
+                        desc: { zh: "拒绝晒伤脱皮", ko: "피부 화상 및 노화 방지 필수" },
+                        taobaoUrl: "https://s.taobao.com/search?q=安热沙金瓶防晒霜+SPF50",
+                        amazonUrl: "https://www.amazon.com/s?k=anessa+perfect+uv+sunscreen",
+                        image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=400"
+                    }
+                ]
+            },
+            "B": {
+                dest: { zh: "冰岛 · 雷克雅未克", ko: "아이슬란드 레이캬비크" },
+                image: "https://images.unsplash.com/photo-1504829857797-cb250c8e2907?auto=format&fit=crop&q=80&w=800",
+                routePlan: [
+                    { day: 1, zh: "抵达雷市，游览哈尔格林姆斯大教堂，晚上初探极光", ko: "레이캬비크 도착, 할그림스키르캬 성당 방문 및 야간 오로라 헌팅" },
+                    { day: 2, zh: "黄金圈经典一日游（间歇泉、黄金瀑布、辛格韦德利国家公园）", ko: "골든 서클 투어 (게이시르, 굴포스, 싱벨리어 국립공원)" },
+                    { day: 3, zh: "前往蓝湖温泉放松，体验冰洞探险", ko: "블루라군 온천 힐링 및 얼음 동굴 탐험" }
+                ],
+                products: [
+                    {
+                        name: { zh: "智能发热鞋垫/强力暖宝宝", ko: "발열 깔창 및 강력 핫팩" },
+                        desc: { zh: "等极光续命神器", ko: "오로라 대기 시 생존 필수템" },
+                        taobaoUrl: "https://s.taobao.com/search?q=强力暖宝宝贴+发热鞋垫",
+                        amazonUrl: "https://www.amazon.com/s?k=hand+warmers+body+heat+packs",
+                        image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?auto=format&fit=crop&q=80&w=400"
+                    },
+                    {
+                        name: { zh: "防雾专业墨镜", ko: "김서림 방지 전문 선글라스" },
+                        desc: { zh: "拒绝雪盲症", ko: "설맹증 방지 및 시력 보호" },
+                        taobaoUrl: "https://s.taobao.com/search?q=滑雪墨镜+防雪盲+户外",
+                        amazonUrl: "https://www.amazon.com/s?k=polarized+ski+sunglasses+anti+fog",
+                        image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400"
+                    }
+                ]
+            },
+            "C": {
+                dest: { zh: "中国 · 川西秘境", ko: "중국 차오시(쓰추안) 비경" },
+                image: "https://images.unsplash.com/photo-1527684651001-731c474336c1?auto=format&fit=crop&q=80&w=800",
+                routePlan: [
+                    { day: 1, zh: "成都出发，翻越折多山，抵达新都桥", ko: "청두 출발, 저둬산 넘어서 신두차오 도착" },
+                    { day: 2, zh: "塔公草原骑马，远眺雅拉雪山，感受藏地风情", ko: "타공 초원 승마, 야라 설산 조망, 티베트 문화 체험" },
+                    { day: 3, zh: "墨石公园徒步，傍晚返回成都", ko: "모스공원 트레킹, 저녁에 청두로 귀환" }
+                ],
+                products: [
+                    {
+                        name: { zh: "轻量折叠碳素登山杖", ko: "초경량 카본 접이식 등산스틱" },
+                        desc: { zh: "分担膝盖30%压力", ko: "무릎 관절 하중 30% 경감" },
+                        taobaoUrl: "https://s.taobao.com/search?q=碳素折叠登山杖+超轻",
+                        amazonUrl: "https://www.amazon.com/s?k=carbon+fiber+folding+trekking+poles",
+                        image: "https://images.unsplash.com/photo-1519120693590-c65538eec4a0?auto=format&fit=crop&q=80&w=400"
+                    },
+                    {
+                        name: { zh: "户外多功能防蚊急救包", ko: "아웃도어 멀티 구급 및 해충 방지 키트" },
+                        desc: { zh: "高原山林野外刚需", ko: "고산지대 및 야외 필수 생존 키트" },
+                        taobaoUrl: "https://s.taobao.com/search?q=户外防蚊虫喷雾+便携急救包",
+                        amazonUrl: "https://www.amazon.com/s?k=outdoor+first+aid+kit+bug+spray",
+                        image: "https://images.unsplash.com/photo-1603398938378-e54eab446dde?auto=format&fit=crop&q=80&w=400"
+                    }
+                ]
+            },
+            "D": {
+                dest: { zh: "日本 · 大阪", ko: "일본 오사카" },
+                image: "https://images.unsplash.com/photo-1590559899731-a382839cecdf?auto=format&fit=crop&q=80&w=800",
+                isOsaka: true,
+                products: [
+                    {
+                        name: { zh: "全球通用多功能转换插头", ko: "전 세계 만능 멀티 어댑터" },
+                        desc: { zh: "爆款刚需，自带4个USB口", ko: "글로벌 필수템, 4개 USB 포트 탑재" },
+                        taobaoUrl: "https://s.taobao.com/search?q=全球通用转换插头+多USB口",
+                        amazonUrl: "https://www.amazon.com/s?k=universal+travel+adapter+worldwide",
+                        image: "https://images.unsplash.com/photo-1558236531-1e96fbc62c01?auto=format&fit=crop&q=80&w=400"
+                    },
+                    {
+                        name: { zh: "大容量快充移动电源", ko: "대용량 고속충전 보조배터리" },
+                        desc: { zh: "环球影城拍一天照刚需", ko: "유니버설 스튜디오 하루 종일 촬영 필수" },
+                        taobaoUrl: "https://s.taobao.com/search?q=快充大容量充电宝+20000mAh",
+                        amazonUrl: "https://www.amazon.com/s?k=power+bank+fast+charging+20000mah",
+                        image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&q=80&w=400"
+                    }
+                ]
+            },
+            "E": {
+                dest: { zh: "埃及 · 开罗", ko: "이집트 카이로" },
+                image: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&q=80&w=800",
+                routePlan: [
+                    { day: 1, zh: "抵达开罗，参观吉萨金字塔群与狮身人面像", ko: "카이로 도착, 기자 피라미드 및 스핑크스 관람" },
+                    { day: 2, zh: "探访埃及博物馆，感受千年法老文明", ko: "이집트 박물관 방문, 천년 파라오 문명 탐험" },
+                    { day: 3, zh: "漫步哈利利大集市，挑选特色手工艺品", ko: "칸 엘 칼릴리 시장 산책, 전통 수공예품 쇼핑" }
+                ],
+                products: [
+                    {
+                        name: { zh: "轻便防晒透气面纱", ko: "가볍고 통기성 좋은 자외선 차단 페이스 스카프" },
+                        desc: { zh: "挡沙暴与烈日且出片", ko: "모래바람과 태양을 막아주는 감성 아이템" },
+                        taobaoUrl: "https://s.taobao.com/search?q=防晒透气面纱+异域风情围巾",
+                        amazonUrl: "https://www.amazon.com/s?k=uv+protection+breathable+face+scarf",
+                        image: "https://images.unsplash.com/photo-1549429446-4c3db47f9ba5?auto=format&fit=crop&q=80&w=400"
+                    },
+                    {
+                        name: { zh: "便携手持迷你风扇", ko: "휴대용 핸디 미니 선풍기" },
+                        desc: { zh: "防暑神物", ko: "더위 극복 신의 한 수" },
+                        taobaoUrl: "https://s.taobao.com/search?q=手持迷你小风扇+静音大风力",
+                        amazonUrl: "https://www.amazon.com/s?k=portable+handheld+mini+fan",
+                        image: "https://images.unsplash.com/photo-1618220037803-01046fc0b91f?auto=format&fit=crop&q=80&w=400"
+                    }
+                ]
+            },
+            "F": {
+                dest: { zh: "美国 · 66号公路", ko: "미국 루트 66" },
+                image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800",
+                routePlan: [
+                    { day: 1, zh: "芝加哥起点打卡，租车正式开启66号公路自驾", ko: "시카고 출발점 인증샷, 렌터카 인수 및 루트 66 드라이브 시작" },
+                    { day: 2, zh: "驰骋在荒漠公路，探访复古汽车旅馆与霓虹小镇", ko: "사막 도로 질주, 레트로 모텔 및 네온사인 소도시 탐방" },
+                    { day: 3, zh: "抵达大峡谷南缘，观赏震撼人心的壮丽日落", ko: "그랜드 캐니언 사우스 림 도착, 장엄한 일몰 감상" }
+                ],
+                products: [
+                    {
+                        name: { zh: "车载强力手机支架", ko: "차량용 강력 스마트폰 거치대" },
+                        desc: { zh: "自驾导航全靠它", ko: "장거리 로드트립 내비게이션 필수품" },
+                        taobaoUrl: "https://s.taobao.com/search?q=车载强力手机支架+吸盘无线充",
+                        amazonUrl: "https://www.amazon.com/s?k=car+phone+mount+heavy+duty",
+                        image: "https://images.unsplash.com/photo-1542618684-257a3e76d9db?auto=format&fit=crop&q=80&w=400"
+                    },
+                    {
+                        name: { zh: "高品质偏光驾驶墨镜", ko: "고품질 편광 드라이빙 선글라스" },
+                        desc: { zh: "过滤荒漠公路刺眼反光", ko: "사막 도로의 눈부신 반사광 차단" },
+                        taobaoUrl: "https://s.taobao.com/search?q=雷朋偏光驾驶墨镜+防眩光",
+                        amazonUrl: "https://www.amazon.com/s?k=polarized+driving+sunglasses+men+women",
+                        image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400"
+                    }
                 ]
             }
         };
 
-        // UI State
-        let selectedDays = 1;
+        // --- STATE ---
+        let lang = 'zh'; // 'zh' or 'ko'
+        let state = 'landing'; // 'landing', 'quiz', 'result'
+        let currentQuestion = 0;
+        let answers = []; // Stores selected letters (A-F)
+        let finalResultId = null;
+
+        // Map variables
+        let osakaMap = null;
         let markersMap = {};
 
-        // Setup Map (Light theme tiles matching "Antigravity" vibe)
-        const map = L.map('map', { zoomControl: false }).setView([37.5665, 126.9780], 12);
-        L.control.zoom({ position: 'topright' }).addTo(map);
+        const appContent = document.getElementById('app-content');
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }).addTo(map);
+        // --- LOGIC ---
+        function setLanguage(newLang) {
+            lang = newLang;
 
-        let markerGroup = L.featureGroup().addTo(map);
+            // Update Toggle Switch UI
+            document.getElementById('lang-switch-container').setAttribute('data-lang', lang);
 
-        // UI Elements
-        const citySelect = document.getElementById('citySelect');
-        const daysBtns = document.querySelectorAll('.day-btn');
-        const generateBtn = document.getElementById('generateBtn');
-        const itineraryList = document.getElementById('itineraryList');
-        const emptyState = document.getElementById('emptyState');
+            if (lang === 'zh') {
+                document.getElementById('btn-lang-zh').classList.replace('text-gray-500', 'text-indigo-600');
+                document.getElementById('btn-lang-ko').classList.replace('text-indigo-600', 'text-gray-500');
+                document.documentElement.lang = 'zh';
+            } else {
+                document.getElementById('btn-lang-ko').classList.replace('text-gray-500', 'text-indigo-600');
+                document.getElementById('btn-lang-zh').classList.replace('text-indigo-600', 'text-gray-500');
+                document.documentElement.lang = 'ko';
+            }
 
-        // Event Listeners
-        citySelect.addEventListener('change', (e) => {
-            const city = db[e.target.value];
-            map.flyTo(city.coords, 12, { duration: 2, easeLinearity: 0.25 });
-        });
-
-        daysBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                daysBtns.forEach(b => {
-                    b.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-md', 'scale-[1.02]');
-                    b.classList.add('bg-white/60', 'text-gray-600');
-                });
-                const target = e.target;
-                target.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-md', 'scale-[1.02]');
-                target.classList.remove('bg-white/60', 'text-gray-600');
-                selectedDays = parseInt(target.getAttribute('data-days'));
-            });
-        });
-
-        // Time Generator Helper (approximate 3 spots a day: 10AM, 2PM, 6PM)
-        const times = ["10:00 AM", "02:00 PM", "06:00 PM"];
-
-        // Generate Itinerary
-        generateBtn.addEventListener('click', () => {
-            const cityKey = citySelect.value;
-            const cityData = db[cityKey];
-            const neededSpotsCount = selectedDays * 3;
-
-            // Slice the required number of spots
-            const scheduleSpots = cityData.spots.slice(0, neededSpotsCount);
-
-            // Clear UI and Map
-            if (emptyState) emptyState.style.display = 'none';
-            itineraryList.innerHTML = '';
-            markerGroup.clearLayers();
-            markersMap = {};
-
-            let currentDay = 0;
-            let boundsData = [];
-
-            scheduleSpots.forEach((spot, idx) => {
-                const dayNum = Math.floor(idx / 3) + 1;
-                const timeStr = times[idx % 3];
-                const spotId = `spot_${idx}`;
-
-                // Add Day Header if it's the first spot of the day
-                if (dayNum !== currentDay) {
-                    currentDay = dayNum;
-                    const header = document.createElement('div');
-                    header.className = 'sticky top-0 z-20 pt-4 pb-2 bg-[#f8fafc]/90 backdrop-blur-xl mt-4 first:mt-0';
-                    header.innerHTML = `
-                        <div class="inline-flex items-center px-4 py-1.5 bg-white rounded-2xl shadow-sm border border-gray-200/60">
-                            <i data-lucide="calendar" class="w-4 h-4 text-blue-600 mr-2"></i>
-                            <span class="text-gray-800 font-bold text-sm tracking-wide">Day ${dayNum}</span>
-                        </div>
-                    `;
-                    itineraryList.appendChild(header);
-                    lucide.createIcons({ root: header });
-                }
-
-                // Create Card
-                const card = document.createElement('div');
-                card.className = "glass-card rounded-2xl p-4 mb-3 cursor-pointer group relative overflow-hidden";
-
-                // Fetch beautifully generated image for vibe
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(cityData.name + ' ' + spot[0])}?width=400&height=300&nologo=true`;
-
-                card.innerHTML = `
-                    <div class="flex gap-4 relative z-10">
-                        <div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 shadow-sm relative bg-gray-200">
-                            <img src="${imageUrl}" alt="${spot[0]}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                        </div>
-                        <div class="flex-1 min-w-0 py-1">
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-bold text-gray-900 text-base line-clamp-1 group-hover:text-blue-600 transition-colors">${spot[0]}</h3>
-                            </div>
-                            <div class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-md mb-2">
-                                <i data-lucide="clock" class="w-3 h-3 mr-1"></i> ${timeStr}
-                            </div>
-                            <p class="text-gray-500 text-xs leading-relaxed line-clamp-2">${spot[3]}</p>
-                        </div>
-                    </div>
-                `;
-                card.onclick = () => focusOnMap(spotId);
-                itineraryList.appendChild(card);
-                lucide.createIcons({ root: card });
-
-                // Map Marker
-                const markerHtml = `
-                    <div style="background-color: #2563EB; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 3px solid white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); font-size: 14px; position: relative;">
-                        ${idx + 1}
-                        <div style="position: absolute; bottom: -6px; width: 6px; height: 6px; background: #2563EB; transform: rotate(45deg); z-index: -1;"></div>
-                    </div>
-                `;
-
-                const customIcon = L.divIcon({
-                    className: 'custom-pin',
-                    html: markerHtml,
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 32],
-                    popupAnchor: [0, -32]
-                });
-
-                const popupHtml = `
-                    <div class="p-2 w-48">
-                        <img src="${imageUrl}" class="w-full h-24 object-cover rounded-lg mb-3 shadow-sm">
-                        <div class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded inline-block mb-2 uppercase tracking-wider">Day ${dayNum} · ${timeStr}</div>
-                        <h4 class="font-bold text-gray-900 text-sm mb-1">${spot[0]}</h4>
-                        <p class="text-xs text-gray-500 m-0 leading-tight">${spot[3]}</p>
-                    </div>
-                `;
-
-                const marker = L.marker([spot[1], spot[2]], { icon: customIcon })
-                    .bindPopup(popupHtml, { autoPanPadding: [50, 50] })
-                    .addTo(markerGroup);
-
-                markersMap[spotId] = marker;
-                boundsData.push([spot[1], spot[2]]);
-            });
-
-            // Adjust Map
-            map.fitBounds(boundsData, { padding: [60, 60], maxZoom: 15, animate: true, duration: 1.5 });
-
-            // Button Vibe
-            generateBtn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5"></i><span>Itinerary Ready! (行程就绪 / 일정 완성)</span>`;
-            generateBtn.classList.remove('bg-gray-900', 'hover:bg-black');
-            generateBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-            generateBtn.style.transform = 'scale(0.98)';
-            setTimeout(() => generateBtn.style.transform = 'scale(1)', 150);
-
-            lucide.createIcons();
-        });
-
-        // Focus function
-        function focusOnMap(spotId) {
-            const targetMarker = markersMap[spotId];
-            if (!targetMarker) return;
-
-            map.flyTo(targetMarker.getLatLng(), 16, { duration: 1.5, easeLinearity: 0.2 });
-            map.once('moveend', () => targetMarker.openPopup());
+            // Re-render current view dynamically
+            renderCurrentState(false);
         }
 
-        // Init initial view based on selected dropdown
-        citySelect.dispatchEvent(new Event('change'));
+        function triggerFade(callback) {
+            appContent.classList.remove('show');
+            setTimeout(() => {
+                callback();
+                setTimeout(() => {
+                    appContent.classList.add('show');
+                }, 50);
+            }, 300);
+        }
+
+        function renderCurrentState(animate = true) {
+            const render = () => {
+                if (state === 'landing') renderLanding();
+                else if (state === 'quiz') renderQuiz();
+                else if (state === 'result') renderResult();
+            };
+
+            if (animate) {
+                triggerFade(render);
+            } else {
+                render();
+            }
+        }
+
+        function startQuiz() {
+            state = 'quiz';
+            currentQuestion = 0;
+            answers = [];
+            renderCurrentState(true);
+        }
+
+        function selectOption(optionId) {
+            answers.push(optionId);
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderCurrentState(true);
+            } else {
+                calculateResult();
+            }
+        }
+
+        function calculateResult() {
+            const counts = {};
+            answers.forEach(val => {
+                counts[val] = (counts[val] || 0) + 1;
+            });
+            let maxCount = 0;
+            let resultId = 'A'; // default
+            for (const [id, count] of Object.entries(counts)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    resultId = id;
+                }
+            }
+            finalResultId = resultId;
+            state = 'result';
+            renderCurrentState(true);
+        }
+
+        function restartQuiz() {
+            state = 'landing';
+            const container = document.getElementById('travel-quiz-container');
+            container.classList.remove('max-w-4xl');
+            container.classList.add('max-w-2xl');
+            renderCurrentState(true);
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderLanding() {
+            const landingTitleStr = i18n.landingTitle[lang];
+            const landingDescStr = i18n.landingDesc[lang];
+            const startBtnStr = i18n.startBtn[lang];
+
+            appContent.innerHTML = `
+                <div class="flex-1 flex flex-col justify-center items-center text-center max-w-md mx-auto py-10">
+                    <div class="text-7xl mb-6 transform hover:scale-110 transition-transform duration-300">🧭</div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
+                        ${landingTitleStr}
+                    </h1>
+                    <p class="text-gray-600 text-lg mb-10 leading-relaxed font-medium">
+                        ${landingDescStr}
+                    </p>
+                    <button onclick="startQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-12 rounded-full shadow-lg shadow-indigo-200 transform hover:-translate-y-1 transition-all duration-300 w-full md:w-auto text-lg">
+                        ${startBtnStr}
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderQuiz() {
+            const qData = questions[currentQuestion];
+            const progressPercent = ((currentQuestion) / questions.length) * 100;
+            const currentQText = qData.q[lang];
+
+            let optionsHtml = '';
+            qData.options.forEach(opt => {
+                const optText = opt[lang];
+                optionsHtml += `
+                <button onclick="selectOption('${opt.id}')" class="option-card w-full text-left p-4 md:p-5 rounded-2xl flex items-center gap-4 group cursor-pointer shadow-sm">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                        ${opt.id}
+                    </div>
+                    <span class="text-gray-700 font-semibold group-hover:text-gray-900 text-base md:text-lg transition-colors duration-300">
+                        ${optText}
+                    </span>
+                </button>
+                `;
+            });
+
+            appContent.innerHTML = `
+                <div class="w-full flex-1 flex flex-col pt-2">
+                    <div class="mb-8">
+                        <div class="flex justify-between text-sm font-bold text-gray-500 mb-2">
+                            <span>Q${currentQuestion + 1}</span>
+                            <span>${currentQuestion + 1} / ${questions.length}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2.5 rounded-full progress-bar-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-8 leading-snug">
+                        ${currentQText}
+                    </h2>
+                    
+                    <div class="space-y-3 flex-1 pb-4">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const fill = document.querySelector('.progress-bar-fill');
+                if (fill) {
+                    fill.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+                }
+            }, 50);
+        }
+
+        function renderResult() {
+            const resData = resultsData[finalResultId];
+            const container = document.getElementById('travel-quiz-container');
+
+            // 动态扩展容器以容纳地图
+            if (resData.isOsaka) {
+                container.classList.remove('max-w-2xl');
+                container.classList.add('max-w-4xl');
+            } else {
+                container.classList.remove('max-w-4xl');
+                container.classList.add('max-w-2xl');
+            }
+
+            const osakaPlannerTitleStr = i18n.osakaPlannerTitle[lang];
+            const simplePlannerTitleStr = i18n.simplePlannerTitle[lang];
+            const matchResultStr = i18n.matchResult[lang];
+            const destNameStr = resData.dest[lang];
+            const destImgUrl = resData.image;
+            const transitionTextStr = i18n.transitionText[lang];
+            const recommendedProductsStr = i18n.recommendedProducts[lang];
+            const calloutStr = i18n.callout[lang];
+            const retakeBtnStr = i18n.retakeBtn[lang];
+            const taobaoBtnStr = i18n.taobaoBtn[lang];
+            const amazonBtnStr = i18n.amazonBtn[lang];
+
+            // 行程规划 HTML (Leaflet Map vs Simple Route)
+            let itineraryHtml = '';
+            if (resData.isOsaka) {
+                itineraryHtml = `
+                    <div class="mt-10 bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 fade-transition show">
+                        <div class="p-4 bg-indigo-600 text-white font-bold flex justify-between items-center">
+                            <span>📍 ${osakaPlannerTitleStr}</span>
+                            <span class="text-[11px] bg-white text-indigo-600 px-2.5 py-1 rounded-full uppercase tracking-widest font-black">Powered by Vibe Planner</span>
+                        </div>
+                        <div class="flex flex-col md:flex-row h-[500px]">
+                            <!-- Left: List -->
+                            <div class="w-full md:w-[40%] h-[250px] md:h-full overflow-y-auto p-4 space-y-4 bg-gray-50 border-r border-gray-100" id="osaka-itinerary-list">
+                                <!-- JS will populate -->
+                            </div>
+                            <!-- Right: Map -->
+                            <div class="w-full md:w-[60%] h-[250px] md:h-full relative z-0" id="osaka-map"></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                let routePlanHtml = '';
+                if (resData.routePlan) {
+                    resData.routePlan.forEach(rp => {
+                        const rpDesc = rp[lang];
+                        routePlanHtml += `
+                        <div class="flex flex-col p-4 bg-white rounded-xl shadow-sm border border-gray-100 mb-3 border-l-4 border-l-indigo-400 hover:border-l-pink-400 transition-colors group">
+                            <span class="font-bold text-indigo-700 text-sm mb-1 group-hover:text-pink-600 transition-colors">Day ${rp.day}</span>
+                            <span class="text-gray-700 text-[15px] font-medium">${rpDesc}</span>
+                        </div>
+                        `;
+                    });
+                }
+
+                itineraryHtml = `
+                    <div class="mt-8 bg-gray-50/50 p-5 rounded-2xl border border-gray-100 shadow-inner">
+                        <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            🧭 ${simplePlannerTitleStr}
+                        </h4>
+                        ${routePlanHtml}
+                    </div>
+                `;
+            }
+
+            let productsHtml = '';
+            resData.products.forEach(prod => {
+                const prodName = prod.name[lang];
+                const prodDesc = prod.desc[lang];
+                productsHtml += `
+                <div class="bg-white/90 backdrop-blur-md border border-white/60 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row gap-5 shadow-sm hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-full md:w-36 h-36 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-100">
+                        <img src="${prod.image}" alt="Product" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-extrabold text-lg text-gray-900 mb-1.5">${prodName}</h4>
+                            <p class="text-sm font-medium text-gray-500 mb-4">${prodDesc}</p>
+                        </div>
+                        <div class="flex gap-2.5 mt-auto">
+                            <!-- Direct link with target=_blank -->
+                            <a href="${prod.taobaoUrl}" target="_blank" class="flex-1 bg-gradient-to-r from-[#ff5000] to-[#ff7e00] hover:from-[#e64800] hover:to-[#ff5000] text-white text-center py-2.5 rounded-xl font-bold text-sm transition-all shadow-md transform hover:-translate-y-0.5 flex items-center justify-center gap-1">
+                                🛒 ${taobaoBtnStr}
+                            </a>
+                            <a href="${prod.amazonUrl}" target="_blank" class="flex-1 bg-gradient-to-r from-[#232f3e] to-[#37475A] hover:from-[#131a22] hover:to-[#232f3e] text-white text-center py-2.5 rounded-xl font-bold text-sm transition-all shadow-md transform hover:-translate-y-0.5 flex items-center justify-center gap-1">
+                                📦 ${amazonBtnStr}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+
+            appContent.innerHTML = `
+                <div class="w-full pb-4">
+                    <!-- Result Header -->
+                    <div class="text-center mb-8">
+                        <p class="text-indigo-600 font-bold text-sm uppercase tracking-wider mb-2">${matchResultStr}</p>
+                        <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-6 text-gradient drop-shadow-sm">
+                            ${destNameStr}
+                        </h2>
+                        <div class="w-full h-48 md:h-72 rounded-3xl overflow-hidden shadow-lg border-4 border-white">
+                            <img src="${destImgUrl}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" alt="Destination">
+                        </div>
+                    </div>
+                    
+                    <!-- Vibe Planner Injection -->
+                    ${itineraryHtml}
+
+                    <!-- Transition Text -->
+                    <div class="text-center my-10">
+                        <p class="text-lg md:text-xl font-extrabold text-indigo-900 bg-white/80 inline-block px-6 py-3.5 rounded-2xl shadow-sm border border-indigo-100 backdrop-blur-md">
+                            ${transitionTextStr}
+                        </p>
+                    </div>
+
+                    <!-- Products Section -->
+                    <div class="mb-10">
+                        <h3 class="text-xl font-extrabold text-gray-800 mb-5 flex items-center gap-2">
+                            🛍️ ${recommendedProductsStr}
+                        </h3>
+                        <div class="space-y-4">
+                            ${productsHtml}
+                        </div>
+                    </div>
+
+                    <!-- Callout Box -->
+                    <div class="bg-gradient-to-r from-pink-50 to-indigo-50 border border-indigo-100 rounded-2xl p-5 mb-8 text-center shadow-sm">
+                        <p class="font-bold text-indigo-800 text-[15px]">
+                            ${calloutStr}
+                        </p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="text-center">
+                        <button onclick="restartQuiz()" class="text-gray-500 font-bold hover:text-indigo-600 transition-colors flex items-center justify-center gap-2 mx-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                            </svg>
+                            ${retakeBtnStr}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Initialize Osaka map if necessary
+            if (resData.isOsaka) {
+                // Short delay to ensure DOM is ready
+                setTimeout(() => {
+                    initOsakaMap(lang);
+                }, 50);
+            }
+        }
+
+        function initOsakaMap(langState) {
+            // Cleanup existing map instance if any to prevent Leaflet "Map container is already initialized" error
+            if (osakaMap) {
+                try { osakaMap.remove(); } catch (e) { }
+                osakaMap = null;
+            }
+
+            osakaMap = L.map('osaka-map', { zoomControl: false }).setView([34.6937, 135.5023], 12);
+            L.control.zoom({ position: 'topright' }).addTo(osakaMap);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(osakaMap);
+
+            const markerGroup = L.featureGroup().addTo(osakaMap);
+            markersMap = {};
+
+            const createCustomIcon = (dayNum) => {
+                return L.divIcon({
+                    className: 'custom-day-icon',
+                    html: `
+                        <div style="background-color: #4f46e5; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-size: 13px;">
+                            ${dayNum}
+                        </div>
+                    `,
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 28],
+                    popupAnchor: [0, -28]
+                });
+            };
+
+            const listContainer = document.getElementById('osaka-itinerary-list');
+            if (listContainer) {
+                listContainer.innerHTML = '';
+            }
+
+            osakaItineraryData.forEach(dayInfo => {
+                // Header
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'sticky top-0 z-10 pt-1 pb-2 bg-gray-50/95 backdrop-blur-sm';
+                const currentTitle = dayInfo.title[langState];
+                dayHeader.innerHTML = `
+                    <div class="inline-flex items-center px-3 py-1.5 bg-white rounded-full shadow-sm border border-indigo-100">
+                        <span class="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mr-2">Day ${dayInfo.day}</span>
+                        <span class="text-gray-800 font-bold text-xs">${currentTitle}</span>
+                    </div>
+                `;
+                listContainer.appendChild(dayHeader);
+
+                // Spots
+                dayInfo.spots.forEach(spot => {
+                    const currentName = spot.name[langState];
+                    const currentDesc = spot.desc[langState];
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-xl shadow-sm p-3 mb-3 cursor-pointer border-l-4 border-transparent hover:border-indigo-500 hover:shadow-md transition-all group relative overflow-hidden";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-1 relative z-10">
+                            <h3 class="font-bold text-sm text-gray-800 group-hover:text-indigo-600 transition-colors">${currentName}</h3>
+                            <span class="text-indigo-500 text-[10px] font-bold whitespace-nowrap bg-indigo-50 px-1.5 py-0.5 rounded">${spot.time}</span>
+                        </div>
+                        <p class="text-gray-500 text-[11px] leading-relaxed relative z-10">${currentDesc}</p>
+                    `;
+
+                    card.onclick = () => {
+                        const targetMarker = markersMap[spot.id];
+                        if (targetMarker) {
+                            osakaMap.flyTo(targetMarker.getLatLng(), 15, { duration: 1.2 });
+                            osakaMap.once('moveend', () => {
+                                targetMarker.openPopup();
+                            });
+                        }
+                    };
+                    listContainer.appendChild(card);
+
+                    // Marker & Popup
+                    const popupContent = `
+                        <div class="p-1 min-w-[150px]">
+                            <div class="text-indigo-600 text-[10px] font-bold mb-1">Day ${dayInfo.day} &middot; ${spot.time}</div>
+                            <h4 class="font-bold text-gray-900 text-sm mb-1">${currentName}</h4>
+                            <p class="text-[11px] text-gray-600 m-0">${currentDesc}</p>
+                        </div>
+                    `;
+
+                    const marker = L.marker([spot.lat, spot.lng], { icon: createCustomIcon(dayInfo.day) })
+                        .bindPopup(popupContent, { offset: [0, -5] })
+                        .addTo(markerGroup);
+
+                    markersMap[spot.id] = marker;
+                });
+            });
+
+            // Adjust bounds to fit all markers
+            const bounds = markerGroup.getBounds();
+            osakaMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            const userLang = navigator.language || navigator.userLanguage;
+            if (userLang.startsWith('ko')) {
+                setLanguage('ko');
+            } else {
+                setLanguage('zh');
+            }
+
+            setTimeout(() => {
+                appContent.classList.add('show');
+            }, 100);
+        };
     </script>
 </body>
 
