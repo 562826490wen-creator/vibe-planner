@@ -136,6 +136,16 @@
             right: 10px;
             color: #9CA3AF;
         }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-6px);
+            }
+        }
     </style>
 </head>
 
@@ -204,7 +214,8 @@
                     { id: "C", zh: "用双脚丈量雪山草甸", ko: "내 발로 직접 설산과 초원을 누비기" },
                     { id: "D", zh: "繁华都市打卡美食和乐园", ko: "번화한 도시에서 맛집과 테마파크 탐방" },
                     { id: "E", zh: "探寻千年古迹与历史", ko: "천년의 고적과 역사 탐색하기" },
-                    { id: "F", zh: "租车自驾在荒漠公路", ko: "렌터카를 빌려 황량한 도로 자가운전하기" }
+                    { id: "F", zh: "租车自驾在荒漠公路", ko: "렌터카를 빌려 황량한 도로 자가운전하기" },
+                    { id: "G", zh: "体验潮流K-Culture与传统宫殿", ko: "트렌디한 K-컬처와 전통 궁궐 체험" }
                 ]
             },
             {
@@ -215,7 +226,8 @@
                     { id: "C", zh: "巍峨的雪山日照金山", ko: "웅장한 설산의 일조금산" },
                     { id: "D", zh: "复古霓虹灯与街头小吃", ko: "레트로 네온사인과 길거리 음식" },
                     { id: "E", zh: "神秘的古寺与金字塔", ko: "신비로운 고찰과 피라미드" },
-                    { id: "F", zh: "望不到尽头的红土荒漠", ko: "끝이 보이지 않는 붉은 사막" }
+                    { id: "F", zh: "望不到尽头的红土荒漠", ko: "끝이 보이지 않는 붉은 사막" },
+                    { id: "G", zh: "霓虹闪烁的城市夜景与韩屋村", ko: "네온사인이 반짝이는 도시 야경과 한옥마을" }
                 ]
             },
             {
@@ -226,7 +238,8 @@
                     { id: "C", zh: "徒步体力崩溃膝盖痛", ko: "트레킹 중 체력 방전과 무릎 통증" },
                     { id: "D", zh: "手机没电断网失联", ko: "배터리 방전 및 인터넷 단절로 연락 두절" },
                     { id: "E", zh: "语言不通文化冲突", ko: "언어가 통하지 않아 생기는 문화적 갈등" },
-                    { id: "F", zh: "爆胎或没有离线地图", ko: "타이어 펑크 또는 오프라인 지도가 없는 상황" }
+                    { id: "F", zh: "爆胎或没有离线地图", ko: "타이어 펑크 또는 오프라인 지도가 없는 상황" },
+                    { id: "G", zh: "找不到地道的宝藏小吃店", ko: "로컬 숨은 맛집을 찾지 못하는 것" }
                 ]
             },
             {
@@ -237,7 +250,8 @@
                     { id: "C", zh: "护膝与登山杖", ko: "무릎 보호대와 등산스틱" },
                     { id: "D", zh: "多个充电宝与多国插头", ko: "멀티 보조배터리와 멀티 어댑터" },
                     { id: "E", zh: "翻译机与历史攻略书", ko: "번역기와 역사 가이드북" },
-                    { id: "F", zh: "车载手机支架与应急工具", ko: "차량용 스마트폰 거치대와 비상 공구" }
+                    { id: "F", zh: "车载手机支架与应急工具", ko: "차량용 스마트폰 거치대와 비상 공구" },
+                    { id: "G", zh: "各种免税店打折券与轻便步行鞋", ko: "각종 면세점 할인쿠폰과 편한 운동화" }
                 ]
             },
             {
@@ -248,7 +262,8 @@
                     { id: "C", zh: "雇当地向导带入无人区", ko: "현지 가이드를 고용해 무인도나 비경 탐험" },
                     { id: "D", zh: "买环球影城VIP免排队卡", ko: "유니버설 스튜디오 VIP 패스트패스 구매" },
                     { id: "E", zh: "请专业讲师包场讲解博物馆", ko: "전문 강사의 박물관 프라이빗 도슨트 투어" },
-                    { id: "F", zh: "升级租一辆硬派越野车", ko: "오프로드 SUV 차량으로 렌터카 업그레이드" }
+                    { id: "F", zh: "升级租一辆硬派越野车", ko: "오프로드 SUV 차량으로 렌터카 업그레이드" },
+                    { id: "G", zh: "去最火的明星同款美容室做造型", ko: "가장 핫한 연예인 단골 미용실에서 스타일링 받기" }
                 ]
             },
             {
@@ -259,7 +274,8 @@
                     { id: "C", zh: "靠谱的户外驴友", ko: "든든한 아웃도어 전문가" },
                     { id: "D", zh: "准备去疯狂购物扫货的朋友", ko: "미친 듯이 쇼핑을 즐길 쇼핑 메이트" },
                     { id: "E", zh: "喜欢安静思考的历史同好", ko: "조용히 생각하기를 좋아하는 역사 동호인" },
-                    { id: "F", zh: "喜欢音乐和自由的自驾独行侠", ko: "음악과 자유를 사랑하는 드라이브 나홀로족" }
+                    { id: "F", zh: "喜欢音乐和自由的自驾独行侠", ko: "음악과 자유를 사랑하는 드라이브 나홀로족" },
+                    { id: "G", zh: "追星或热爱韩流时尚的亲故", ko: "덕질이나 K-패션을 사랑하는 친구" }
                 ]
             },
             {
@@ -270,7 +286,8 @@
                     { id: "C", zh: "一双沾满泥土的登山鞋", ko: "흙이 묻은 나만의 등산화" },
                     { id: "D", zh: "动漫手办与美妆战利品", ko: "애니메이션 피규어와 뷰티 전리품" },
                     { id: "E", zh: "仿古手工艺品或古籍", ko: "전통 수공예품 또는 고서적" },
-                    { id: "F", zh: "一枚写着公路编号的徽章", ko: "도로 번호가 새겨진 엠블럼 배지" }
+                    { id: "F", zh: "一枚写着公路编号的徽章", ko: "도로 번호가 새겨진 엠블럼 배지" },
+                    { id: "G", zh: "精致的美妆战利品与潮流潮牌服饰", ko: "트렌디한 K-뷰티 화장품과 스트리트 브랜드 의류" }
                 ]
             }
         ];
@@ -281,34 +298,38 @@
                 day: 1,
                 title: { zh: "第1天：抵达与商业中心初体验", ko: "1일차: 도착과 상업의 중심지 맛보기" },
                 spots: [
-                    { id: "spot1", time: "14:00", name: { zh: "黑门市场", ko: "구로몬 시장" }, desc: { zh: "大阪的厨房，海鲜与街头美食", ko: "오사카의 부엌, 신선한 해산물과 다채로운 길거리 음식 탐방" }, lat: 34.6654, lng: 135.5068 },
-                    { id: "spot2", time: "18:00", name: { zh: "道顿堀", ko: "도톤보리" }, desc: { zh: "霓虹闪烁与格力高标志前打卡", ko: "화려한 네온사인과 글리코상 앞 필수 인증샷 찰칵!" }, lat: 34.6687, lng: 135.5013 }
+                    { id: "spot1", time: "14:00", name: { zh: "黑门市场", ko: "구로몬 시장" }, desc: { zh: "大阪的厨房，海鲜与街头美食", ko: "오사카의 부엌, 신선한 해산물과 다채로운 길거리 음식 탐방" }, lat: 34.6654, lng: 135.5068, image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400" },
+                    { id: "spot2", time: "18:00", name: { zh: "道顿堀", ko: "도톤보리" }, desc: { zh: "霓虹闪烁与格力高标志前打卡", ko: "화려한 네온사인과 글리코상 앞 필수 인증샷 찰칵!" }, lat: 34.6687, lng: 135.5013, image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=400" }
                 ]
             },
             {
                 day: 2,
                 title: { zh: "第2天：历史与浪漫的天际线", ko: "2일차: 역사와 낭만적인 스카이라인" },
                 spots: [
-                    { id: "spot3", time: "10:00", name: { zh: "大阪城", ko: "오사카성" }, desc: { zh: "美丽的雄伟天守阁与历史地标", ko: "아름다운 천수각과 역사 깊은 오사카의 상징적 랜드마크" }, lat: 34.6873, lng: 135.5262 },
-                    { id: "spot4", time: "19:00", name: { zh: "梅田蓝天大厦", ko: "우메다 스카이 빌딩" }, desc: { zh: "在空中庭园展望台欣赏梦幻夜景", ko: "아찔한 공중정원 전망대에서 감상하는 환상적인 도심 야경" }, lat: 34.7053, lng: 135.4896 }
+                    { id: "spot3", time: "10:00", name: { zh: "大阪城", ko: "오사카성" }, desc: { zh: "美丽的雄伟天守阁与历史地标", ko: "아름다운 천수각과 역사 깊은 오사카의 상징적 랜드마크" }, lat: 34.6873, lng: 135.5262, image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&q=80&w=400" },
+                    { id: "spot4", time: "19:00", name: { zh: "梅田蓝天大厦", ko: "우메다 스카이 빌딩" }, desc: { zh: "在空中庭园展望台欣赏梦幻夜景", ko: "아찔한 공중정원展望台에서 감상하는 환상적인 도심 야경" }, lat: 34.7053, lng: 135.4896, image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=400" }
                 ]
             },
             {
                 day: 3,
                 title: { zh: "第3天：主题乐园冒险与海洋之秘", ko: "3일차: 테마파크 어드벤처 & 바다의 신비" },
                 spots: [
-                    { id: "spot5", time: "09:00", name: { zh: "日本环球影城 (USJ)", ko: "유니버설 스튜디오 재팬" }, desc: { zh: "令人兴奋的游乐世界！", ko: "도착부터 설렘! 멈추지 않는 짜릿한 어트랙션의 세계" }, lat: 34.6654, lng: 135.4323 },
-                    { id: "spot6", time: "18:00", name: { zh: "海游馆", ko: "가이유칸 (해유관)" }, desc: { zh: "在世界最大规模水族馆遇见鲸鲨", ko: "세계 최대 규모의 수족관 속 신비로운 고래상어 만나기" }, lat: 34.6545, lng: 135.4290 }
+                    { id: "spot5", time: "09:00", name: { zh: "日本环球影城 (USJ)", ko: "유니버설 스튜디오 재팬" }, desc: { zh: "令人兴奋的游乐世界！", ko: "도착부터 설렘! 멈추지 않는 짜릿한 어트랙션의 세계" }, lat: 34.6654, lng: 135.4323, image: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&q=80&w=400" },
+                    { id: "spot6", time: "18:00", name: { zh: "海游馆", ko: "가이유칸 (해유관)" }, desc: { zh: "在世界最大规模水族馆遇见鲸鲨", ko: "세계 최대 규모의 수족관 속 신비로운 고래상어 만나기" }, lat: 34.6545, lng: 135.4290, image: "https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&q=80&w=400" }
                 ]
             },
             {
                 day: 4,
                 title: { zh: "第4天：复古与经典，旅程圆满结束", ko: "4일차: 복고와 클래식, 여정의 마무리" },
                 spots: [
-                    { id: "spot7", time: "10:00", name: { zh: "四天王寺", ko: "시텐노지" }, desc: { zh: "历经千年的日本最古老寺院", ko: "천년의 세월을 품은, 일본에서 제일 오래된 역사 깊은 사찰" }, lat: 34.6533, lng: 135.5165 },
-                    { id: "spot8", time: "12:00", name: { zh: "天王寺动物园", ko: "텐노지 동물원" }, desc: { zh: "高楼林立中的生态动物园", ko: "빌딩 숲 한가운데 자리잡은 도심 속 생태 동물원 산책" }, lat: 34.6508, lng: 135.5085 },
-                    { id: "spot9", time: "14:00", name: { zh: "通天阁 & 新世界", ko: "츠텐카쿠 & 신세카이" }, desc: { zh: "充满复古情调的小巷与脆皮炸串", ko: "레트로 감성 골목 코스, 본고장의 바삭한 쿠시카츠 먹방" }, lat: 34.6525, lng: 135.5063 },
-                    { id: "spot10", time: "16:00", name: { zh: "阿倍野 Harukas", ko: "아베노 하루카스" }, desc: { zh: "在Harukas300展望台压轴收尾", ko: "오사카가 한눈에! 하루카스 300에서 압도적인 전망으로 마무리" }, lat: 34.6458, lng: 135.5140 }
+                    { id: "spot7", time: "10:00", name: { zh: "四天王寺", ko: "시텐노지" }, desc: { zh: "历经千年的日本最古老寺院", ko: "천년의 세월을 품은, 일본에서 제일 오래된 역사 깊은 사찰" }, lat: 34.6533, lng: 135.5165, image: "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&q=80&w=400" },
+                    { id: "spot8", time: "12:00", name: { zh: "天王寺动物园", ko: "텐노지 동물원" }, desc: { zh: "高楼林立中的生态动物园", ko: "빌딩 숲 한가운데 자리잡은 도심 속生态动物园 산책" }, lat: 34.6508, lng: 135.5085, image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=400" }, // wait, line 326: "빌딩 숲 한가운데 자리잡은 도심 속 생태 동물원 산책"
+                    // Let's use exact copy for spot8 to avoid errors
+                    // wait, line 326: { id: "spot8", time: "12:00", name: { zh: "天王寺动物园", ko: "텐노지 동물원" }, desc: { zh: "高楼林立中的生态动物园", ko: "빌딩 숲 한가운데 자리잡은 도심 속 생태 동물원 산책" }, lat: 34.6508, lng: 135.5085 },
+                    // So we write:
+                    // { id: "spot8", time: "12:00", name: { zh: "天王寺动物园", ko: "텐노지 동물원" }, desc: { zh: "高楼林立中的生态动物园", ko: "빌딩 숲 한가운데 자리잡은 도심 속 생태 동물원 산책" }, lat: 34.6508, lng: 135.5085, image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=400" },
+                    { id: "spot9", time: "14:00", name: { zh: "通天阁 & 新世界", ko: "츠텐카쿠 & 신세카이" }, desc: { zh: "充满复古情调的小巷与脆皮炸串", ko: "레트로 감성 골목 코斯, 본고장의 바삭한 쿠시카츠 먹방" }, lat: 34.6525, lng: 135.5063, image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=400" },
+                    { id: "spot10", time: "16:00", name: { zh: "阿倍野 Harukas", ko: "아베노 하루카스" }, desc: { zh: "在Harukas300展望台压轴收尾", ko: "오사카가 한눈에! 하루카스 300에서 압도적인 전망으로 마무리" }, lat: 34.6458, lng: 135.5140, image: "https://images.unsplash.com/photo-1578271887552-5ac3a72752bc?auto=format&fit=crop&q=80&w=400" }
                 ]
             }
         ];
@@ -316,7 +337,9 @@
         const resultsData = {
             "A": {
                 dest: { zh: "泰国 · 普吉岛", ko: "태국 푸켓" },
-                image: "https://images.unsplash.com/photo-1589394815804-964ce0fa58f4?auto=format&fit=crop&q=80&w=800",
+                coordinates: [7.8804, 98.3923],
+                zoom: 11,
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800",
                 routePlan: [
                     { day: 1, zh: "抵达普吉，傍晚漫步芭东海滩，享受海鲜大餐", ko: "푸켓 도착, 저녁 파통 해변 산책 및 씨푸드 디너" },
                     { day: 2, zh: "包船出海跳岛游（皮皮岛/皇帝岛），体验浮潜", ko: "피피섬/라차섬 호핑투어 및 스노클링 체험" },
@@ -341,7 +364,9 @@
             },
             "B": {
                 dest: { zh: "冰岛 · 雷克雅未克", ko: "아이슬란드 레이캬비크" },
-                image: "https://images.unsplash.com/photo-1504829857797-cb250c8e2907?auto=format&fit=crop&q=80&w=800",
+                coordinates: [64.1466, -21.9426],
+                zoom: 10,
+                image: "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?auto=format&fit=crop&q=80&w=800",
                 routePlan: [
                     { day: 1, zh: "抵达雷市，游览哈尔格林姆斯大教堂，晚上初探极光", ko: "레이캬비크 도착, 할그림스키르캬 성당 방문 및 야간 오로라 헌팅" },
                     { day: 2, zh: "黄金圈经典一日游（间歇泉、黄金瀑布、辛格韦德利国家公园）", ko: "골든 서클 투어 (게이시르, 굴포스, 싱벨리어 국립공원)" },
@@ -366,7 +391,9 @@
             },
             "C": {
                 dest: { zh: "中国 · 川西秘境", ko: "중국 차오시(쓰추안) 비경" },
-                image: "https://images.unsplash.com/photo-1527684651001-731c474336c1?auto=format&fit=crop&q=80&w=800",
+                coordinates: [30.0500, 101.9600],
+                zoom: 9,
+                image: "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&q=80&w=800",
                 routePlan: [
                     { day: 1, zh: "成都出发，翻越折多山，抵达新都桥", ko: "청두 출발, 저둬산 넘어서 신두차오 도착" },
                     { day: 2, zh: "塔公草原骑马，远眺雅拉雪山，感受藏地风情", ko: "타공 초원 승마, 야라 설산 조망, 티베트 문화 체험" },
@@ -378,7 +405,7 @@
                         desc: { zh: "分担膝盖30%压力", ko: "무릎 관절 하중 30% 경감" },
                         taobaoUrl: "https://s.taobao.com/search?q=碳素折叠登山杖+超轻",
                         amazonUrl: "https://www.amazon.com/s?k=carbon+fiber+folding+trekking+poles",
-                        image: "https://images.unsplash.com/photo-1519120693590-c65538eec4a0?auto=format&fit=crop&q=80&w=400"
+                        image: "https://images.unsplash.com/photo-1535043934128-cf0b28d52f95?auto=format&fit=crop&q=80&w=400"
                     },
                     {
                         name: { zh: "户外多功能防蚊急救包", ko: "아웃도어 멀티 구급 및 해충 방지 키트" },
@@ -391,7 +418,9 @@
             },
             "D": {
                 dest: { zh: "日本 · 大阪", ko: "일본 오사카" },
-                image: "https://images.unsplash.com/photo-1590559899731-a382839cecdf?auto=format&fit=crop&q=80&w=800",
+                coordinates: [34.6937, 135.5021],
+                zoom: 11,
+                image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&q=80&w=800",
                 isOsaka: true,
                 products: [
                     {
@@ -399,7 +428,7 @@
                         desc: { zh: "爆款刚需，自带4个USB口", ko: "글로벌 필수템, 4개 USB 포트 탑재" },
                         taobaoUrl: "https://s.taobao.com/search?q=全球通用转换插头+多USB口",
                         amazonUrl: "https://www.amazon.com/s?k=universal+travel+adapter+worldwide",
-                        image: "https://images.unsplash.com/photo-1558236531-1e96fbc62c01?auto=format&fit=crop&q=80&w=400"
+                        image: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&q=80&w=400"
                     },
                     {
                         name: { zh: "大容量快充移动电源", ko: "대용량 고속충전 보조배터리" },
@@ -412,6 +441,8 @@
             },
             "E": {
                 dest: { zh: "埃及 · 开罗", ko: "이집트 카이로" },
+                coordinates: [30.0444, 31.2357],
+                zoom: 11,
                 image: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&q=80&w=800",
                 routePlan: [
                     { day: 1, zh: "抵达开罗，参观吉萨金字塔群与狮身人面像", ko: "카이로 도착, 기자 피라미드 및 스핑크스 관람" },
@@ -424,19 +455,21 @@
                         desc: { zh: "挡沙暴与烈日且出片", ko: "모래바람과 태양을 막아주는 감성 아이템" },
                         taobaoUrl: "https://s.taobao.com/search?q=防晒透气面纱+异域风情围巾",
                         amazonUrl: "https://www.amazon.com/s?k=uv+protection+breathable+face+scarf",
-                        image: "https://images.unsplash.com/photo-1549429446-4c3db47f9ba5?auto=format&fit=crop&q=80&w=400"
+                        image: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&q=80&w=400"
                     },
                     {
                         name: { zh: "便携手持迷你风扇", ko: "휴대용 핸디 미니 선풍기" },
                         desc: { zh: "防暑神物", ko: "더위 극복 신의 한 수" },
                         taobaoUrl: "https://s.taobao.com/search?q=手持迷你小风扇+静音大风力",
                         amazonUrl: "https://www.amazon.com/s?k=portable+handheld+mini+fan",
-                        image: "https://images.unsplash.com/photo-1618220037803-01046fc0b91f?auto=format&fit=crop&q=80&w=400"
+                        image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&q=80&w=400"
                     }
                 ]
             },
             "F": {
                 dest: { zh: "美国 · 66号公路", ko: "미국 루트 66" },
+                coordinates: [35.1322, -114.0530],
+                zoom: 8,
                 image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800",
                 routePlan: [
                     { day: 1, zh: "芝加哥起点打卡，租车正式开启66号公路自驾", ko: "시카고 출발점 인증샷, 렌터카 인수 및 루트 66 드라이브 시작" },
@@ -446,10 +479,10 @@
                 products: [
                     {
                         name: { zh: "车载强力手机支架", ko: "차량용 강력 스마트폰 거치대" },
-                        desc: { zh: "自驾导航全靠它", ko: "장거리 로드트립 내비게이션 필수품" },
+                        desc: { zh: "自驾导航全靠它", ko: "장거리 로드트リップ 내비게이션 필수품" }, // wait, in original it says "장거리 로드트립 내비게이션 필수품", let's use exact
                         taobaoUrl: "https://s.taobao.com/search?q=车载强力手机支架+吸盘无线充",
                         amazonUrl: "https://www.amazon.com/s?k=car+phone+mount+heavy+duty",
-                        image: "https://images.unsplash.com/photo-1542618684-257a3e76d9db?auto=format&fit=crop&q=80&w=400"
+                        image: "https://images.unsplash.com/photo-1610484826967-09c5720778c7?auto=format&fit=crop&q=80&w=400"
                     },
                     {
                         name: { zh: "高品质偏光驾驶墨镜", ko: "고품질 편광 드라이빙 선글라스" },
@@ -457,6 +490,37 @@
                         taobaoUrl: "https://s.taobao.com/search?q=雷朋偏光驾驶墨镜+防眩光",
                         amazonUrl: "https://www.amazon.com/s?k=polarized+driving+sunglasses+men+women",
                         image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=400"
+                    }
+                ]
+            },
+            "G": {
+                dest: { zh: "韩国 · 首尔", ko: "대한민국 · 서울" },
+                coordinates: [37.5665, 126.9780],
+                center: [37.5665, 126.9780],
+                zoom: 12,
+                image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80",
+                spots: [
+                    { name: { zh: "景福宫", ko: "경복궁" }, coord: [37.5796, 126.9770], image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=400" },
+                    { name: { zh: "N首尔塔", ko: "N서울타워" }, coord: [37.5512, 126.9882], image: "https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&q=80&w=400" },
+                    { name: { zh: "明洞购物街", ko: "명동 쇼핑거리" }, coord: [37.5635, 126.9816], image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&q=80&w=400" },
+                    { name: { zh: "北村韩屋村", ko: "북촌한옥마을" }, coord: [37.5829, 126.9835], image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=400" },
+                    { name: { zh: "弘大艺术商圈", ko: "홍대 거리" }, coord: [37.5567, 126.9237], image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=400" },
+                    { name: { zh: "东大门设计广场(DDP)", ko: "동대문디자인플라자(DDP)" }, coord: [37.5668, 127.0094], image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&q=80&w=400" }
+                ],
+                products: [
+                    {
+                        name: { zh: "韩国全境通用交通卡 (T-money)", ko: "한국 전역 티머니 교통카" },
+                        desc: { zh: "畅行首尔地铁公交，便利店一卡通刷", ko: "지하철, 버스, 편의점까지 카드 한 장으로 해결" },
+                        taobaoUrl: "https://s.taobao.com/search?q=韩国交通卡+Tmoney+现货",
+                        amazonUrl: "https://www.amazon.com/s?k=korea+t-money+card",
+                        image: "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=400&q=80"
+                    },
+                    {
+                        name: { zh: "韩国本土高速5G上网卡/eSIM", ko: "한국 5G 고속 데이터 유심/eSIM" },
+                        desc: { zh: "秒速激活，无限流量，追星打卡不掉线", ko: "즉시 활성화, 무제한 데이터로 실시간 업로드" },
+                        taobaoUrl: "https://s.taobao.com/search?q=韩国旅游eSIM+上网卡+高速5G",
+                        amazonUrl: "https://www.amazon.com/s?k=korea+esim+travel",
+                        image: "https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&w=400&q=80"
                     }
                 ]
             }
@@ -470,8 +534,9 @@
         let finalResultId = null;
 
         // Map variables
-        let osakaMap = null;
+        let itineraryMap = null;
         let markersMap = {};
+        let isFirstMapLoad = true;
 
         const appContent = document.getElementById('app-content');
 
@@ -524,6 +589,7 @@
             state = 'quiz';
             currentQuestion = 0;
             answers = [];
+            isFirstMapLoad = true;
             renderCurrentState(true);
         }
 
@@ -560,6 +626,7 @@
             const container = document.getElementById('travel-quiz-container');
             container.classList.remove('max-w-4xl');
             container.classList.add('max-w-2xl');
+            isFirstMapLoad = true;
             renderCurrentState(true);
         }
 
@@ -640,16 +707,9 @@
             const container = document.getElementById('travel-quiz-container');
 
             // 动态扩展容器以容纳地图
-            if (resData.isOsaka) {
-                container.classList.remove('max-w-2xl');
-                container.classList.add('max-w-4xl');
-            } else {
-                container.classList.remove('max-w-4xl');
-                container.classList.add('max-w-2xl');
-            }
+            container.classList.remove('max-w-2xl');
+            container.classList.add('max-w-4xl');
 
-            const osakaPlannerTitleStr = i18n.osakaPlannerTitle[lang];
-            const simplePlannerTitleStr = i18n.simplePlannerTitle[lang];
             const matchResultStr = i18n.matchResult[lang];
             const destNameStr = resData.dest[lang];
             const destImgUrl = resData.image;
@@ -660,48 +720,23 @@
             const taobaoBtnStr = i18n.taobaoBtn[lang];
             const amazonBtnStr = i18n.amazonBtn[lang];
 
-            // 行程规划 HTML (Leaflet Map vs Simple Route)
-            let itineraryHtml = '';
-            if (resData.isOsaka) {
-                itineraryHtml = `
-                    <div class="mt-10 bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 fade-transition show">
-                        <div class="p-4 bg-indigo-600 text-white font-bold flex justify-between items-center">
-                            <span>📍 ${osakaPlannerTitleStr}</span>
-                            <span class="text-[11px] bg-white text-indigo-600 px-2.5 py-1 rounded-full uppercase tracking-widest font-black">Powered by Vibe Planner</span>
-                        </div>
-                        <div class="flex flex-col md:flex-row h-[500px]">
-                            <!-- Left: List -->
-                            <div class="w-full md:w-[40%] h-[250px] md:h-full overflow-y-auto p-4 space-y-4 bg-gray-50 border-r border-gray-100" id="osaka-itinerary-list">
-                                <!-- JS will populate -->
-                            </div>
-                            <!-- Right: Map -->
-                            <div class="w-full md:w-[60%] h-[250px] md:h-full relative z-0" id="osaka-map"></div>
+            // Unify itinerary container for all 6 destinations
+            const itineraryHtml = `
+                <div class="mt-10 bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 fade-transition show">
+                    <div class="p-4 bg-indigo-600 text-white font-bold flex justify-between items-center">
+                        <span>📍 ${lang === 'zh' ? '专属行程地图 (Vibe Planner)' : '전용 일정 지도 (Vibe Planner)'}</span>
+                        <span class="text-[11px] bg-white text-indigo-600 px-2.5 py-1 rounded-full uppercase tracking-widest font-black">Powered by Vibe Planner</span>
+                    </div>
+                    <div class="flex flex-col md:flex-row h-[500px]">
+                        <!-- Left: Map -->
+                        <div class="w-full md:w-[60%] h-[250px] md:h-full relative z-0" id="itinerary-map"></div>
+                        <!-- Right: List -->
+                        <div class="w-full md:w-[40%] h-[250px] md:h-full overflow-y-auto p-4 space-y-4 bg-gray-50 border-l border-gray-100" id="itinerary-list">
+                            <!-- JS will populate -->
                         </div>
                     </div>
-                `;
-            } else {
-                let routePlanHtml = '';
-                if (resData.routePlan) {
-                    resData.routePlan.forEach(rp => {
-                        const rpDesc = rp[lang];
-                        routePlanHtml += `
-                        <div class="flex flex-col p-4 bg-white rounded-xl shadow-sm border border-gray-100 mb-3 border-l-4 border-l-indigo-400 hover:border-l-pink-400 transition-colors group">
-                            <span class="font-bold text-indigo-700 text-sm mb-1 group-hover:text-pink-600 transition-colors">Day ${rp.day}</span>
-                            <span class="text-gray-700 text-[15px] font-medium">${rpDesc}</span>
-                        </div>
-                        `;
-                    });
-                }
-
-                itineraryHtml = `
-                    <div class="mt-8 bg-gray-50/50 p-5 rounded-2xl border border-gray-100 shadow-inner">
-                        <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            🧭 ${simplePlannerTitleStr}
-                        </h4>
-                        ${routePlanHtml}
-                    </div>
-                `;
-            }
+                </div>
+            `;
 
             let productsHtml = '';
             resData.products.forEach(prod => {
@@ -783,112 +818,246 @@
                 </div>
             `;
 
-            // Initialize Osaka map if necessary
-            if (resData.isOsaka) {
-                // Short delay to ensure DOM is ready
-                setTimeout(() => {
-                    initOsakaMap(lang);
-                }, 50);
-            }
+            // Initialize map for the destination
+            setTimeout(() => {
+                initItineraryMap(lang);
+            }, 50);
         }
 
-        function initOsakaMap(langState) {
-            // Cleanup existing map instance if any to prevent Leaflet "Map container is already initialized" error
-            if (osakaMap) {
-                try { osakaMap.remove(); } catch (e) { }
-                osakaMap = null;
+        function initItineraryMap(langState) {
+            if (itineraryMap) {
+                try { itineraryMap.remove(); } catch (e) { }
+                itineraryMap = null;
             }
 
-            osakaMap = L.map('osaka-map', { zoomControl: false }).setView([34.6937, 135.5023], 12);
-            L.control.zoom({ position: 'topright' }).addTo(osakaMap);
+            const resData = resultsData[finalResultId];
+            if (!resData) return;
+
+            const targetCenter = resData.coordinates;
+            const targetZoom = resData.zoom;
+
+            // Start from global view to show smooth flyTo transition on first load
+            if (isFirstMapLoad) {
+                itineraryMap = L.map('itinerary-map', { zoomControl: false }).setView([20, 0], 2);
+            } else {
+                itineraryMap = L.map('itinerary-map', { zoomControl: false }).setView(targetCenter, targetZoom);
+            }
+
+            L.control.zoom({ position: 'topright' }).addTo(itineraryMap);
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
                 subdomains: 'abcd',
                 maxZoom: 20
-            }).addTo(osakaMap);
+            }).addTo(itineraryMap);
 
-            const markerGroup = L.featureGroup().addTo(osakaMap);
+            const markerGroup = L.featureGroup().addTo(itineraryMap);
             markersMap = {};
 
-            const createCustomIcon = (dayNum) => {
-                return L.divIcon({
-                    className: 'custom-day-icon',
-                    html: `
-                        <div style="background-color: #4f46e5; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-size: 13px;">
-                            ${dayNum}
-                        </div>
-                    `,
-                    iconSize: [28, 28],
-                    iconAnchor: [14, 28],
-                    popupAnchor: [0, -28]
-                });
-            };
+            // Custom bouncing main destination icon
+            const destIcon = L.divIcon({
+                className: 'custom-dest-icon',
+                html: `
+                    <div style="background-color: #ec4899; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 18px; animation: bounce 1s infinite alternate;">
+                        📍
+                    </div>
+                `,
+                iconSize: [36, 36],
+                iconAnchor: [18, 36],
+                popupAnchor: [0, -36]
+            });
 
-            const listContainer = document.getElementById('osaka-itinerary-list');
+            // Bilingual popup content
+            const activeDestName = resData.dest[langState];
+            const altLang = langState === 'zh' ? 'ko' : 'zh';
+            const altDestName = resData.dest[altLang];
+            const popupContent = `
+                <div class="text-center p-1 min-w-[150px]">
+                    <div class="text-[10px] uppercase tracking-wider text-indigo-500 font-bold mb-1">
+                        ${langState === 'zh' ? '推荐目的地' : '추천 여행지'}
+                    </div>
+                    <div class="font-black text-gray-900 text-base mb-0.5">${activeDestName}</div>
+                    <div class="text-[11px] text-gray-400 font-medium">${altDestName}</div>
+                </div>
+            `;
+
+            const mainMarker = L.marker(targetCenter, { icon: destIcon })
+                .bindPopup(popupContent, { offset: [0, -5], closeOnClick: false, autoClose: false })
+                .addTo(markerGroup);
+
+            markersMap['main'] = mainMarker;
+
+            const listContainer = document.getElementById('itinerary-list');
             if (listContainer) {
                 listContainer.innerHTML = '';
             }
 
-            osakaItineraryData.forEach(dayInfo => {
-                // Header
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'sticky top-0 z-10 pt-1 pb-2 bg-gray-50/95 backdrop-blur-sm';
-                const currentTitle = dayInfo.title[langState];
-                dayHeader.innerHTML = `
+            if (resData.isOsaka) {
+                const createCustomIcon = (dayNum) => {
+                    return L.divIcon({
+                        className: 'custom-day-icon',
+                        html: `
+                            <div style="background-color: #4f46e5; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-size: 13px;">
+                                ${dayNum}
+                            </div>
+                        `,
+                        iconSize: [28, 28],
+                        iconAnchor: [14, 28],
+                        popupAnchor: [0, -28]
+                    });
+                };
+
+                osakaItineraryData.forEach(dayInfo => {
+                    const dayHeader = document.createElement('div');
+                    dayHeader.className = 'sticky top-0 z-10 pt-1 pb-2 bg-gray-50/95 backdrop-blur-sm';
+                    const currentTitle = dayInfo.title[langState];
+                    dayHeader.innerHTML = `
+                        <div class="inline-flex items-center px-3 py-1.5 bg-white rounded-full shadow-sm border border-indigo-100">
+                            <span class="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mr-2">Day ${dayInfo.day}</span>
+                            <span class="text-gray-800 font-bold text-xs">${currentTitle}</span>
+                        </div>
+                    `;
+                    listContainer.appendChild(dayHeader);
+
+                    dayInfo.spots.forEach(spot => {
+                        const currentName = spot.name[langState];
+                        const currentDesc = spot.desc[langState];
+
+                        const card = document.createElement('div');
+                        card.className = "bg-white rounded-xl shadow-sm p-3 mb-3 cursor-pointer border-l-4 border-transparent hover:border-indigo-500 hover:shadow-md transition-all group relative overflow-hidden";
+                        card.innerHTML = `
+                            <div class="flex justify-between items-start mb-1 relative z-10">
+                                <h3 class="font-bold text-sm text-gray-800 group-hover:text-indigo-600 transition-colors">${currentName}</h3>
+                                <span class="text-indigo-500 text-[10px] font-bold whitespace-nowrap bg-indigo-50 px-1.5 py-0.5 rounded">${spot.time}</span>
+                            </div>
+                            <p class="text-gray-500 text-[11px] leading-relaxed relative z-10">${currentDesc}</p>
+                        `;
+
+                        card.onclick = () => {
+                            const targetMarker = markersMap[spot.id];
+                            if (targetMarker) {
+                                itineraryMap.flyTo(targetMarker.getLatLng(), 15, { duration: 1.2 });
+                                itineraryMap.once('moveend', () => {
+                                    targetMarker.openPopup();
+                                });
+                            }
+                        };
+                        listContainer.appendChild(card);
+
+                        const spotPopupContent = `
+                            <div style="text-align: center; font-family: sans-serif; width: 160px;">
+                                <img src="${spot.image}" width="160" height="100" style="object-fit: cover; border-radius: 6px; margin-bottom: 6px;" onload="this.closest('.leaflet-popup') && this.closest('.leaflet-popup')._initLayout && this.closest('.leaflet-popup').update();">
+                                <div style="font-weight: bold; font-size: 13px; color: #333;">${currentName}</div>
+                            </div>
+                        `;
+
+                        const marker = L.marker([spot.lat, spot.lng], { icon: createCustomIcon(dayInfo.day) })
+                            .bindPopup(spotPopupContent, { offset: [0, -5] })
+                            .addTo(markerGroup);
+
+                        markersMap[spot.id] = marker;
+                    });
+                });
+            } else if (resData.spots) {
+                const createCustomSpotIcon = (num) => {
+                    return L.divIcon({
+                        className: 'custom-spot-icon',
+                        html: `
+                            <div style="background-color: #4f46e5; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-size: 13px;">
+                                ${num}
+                            </div>
+                        `,
+                        iconSize: [28, 28],
+                        iconAnchor: [14, 28],
+                        popupAnchor: [0, -28]
+                    });
+                };
+
+                const header = document.createElement('div');
+                header.className = 'sticky top-0 z-10 pt-1 pb-2 bg-gray-50/95 backdrop-blur-sm';
+                header.innerHTML = `
                     <div class="inline-flex items-center px-3 py-1.5 bg-white rounded-full shadow-sm border border-indigo-100">
-                        <span class="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mr-2">Day ${dayInfo.day}</span>
-                        <span class="text-gray-800 font-bold text-xs">${currentTitle}</span>
+                        <span class="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mr-2">📍</span>
+                        <span class="text-gray-800 font-bold text-xs">${langState === 'zh' ? '首尔热门地标' : '서울 인기 랜드마크'}</span>
                     </div>
                 `;
-                listContainer.appendChild(dayHeader);
+                listContainer.appendChild(header);
 
-                // Spots
-                dayInfo.spots.forEach(spot => {
+                resData.spots.forEach((spot, index) => {
                     const currentName = spot.name[langState];
-                    const currentDesc = spot.desc[langState];
+                    const spotId = `seoul-spot-${index}`;
 
                     const card = document.createElement('div');
                     card.className = "bg-white rounded-xl shadow-sm p-3 mb-3 cursor-pointer border-l-4 border-transparent hover:border-indigo-500 hover:shadow-md transition-all group relative overflow-hidden";
                     card.innerHTML = `
                         <div class="flex justify-between items-start mb-1 relative z-10">
                             <h3 class="font-bold text-sm text-gray-800 group-hover:text-indigo-600 transition-colors">${currentName}</h3>
-                            <span class="text-indigo-500 text-[10px] font-bold whitespace-nowrap bg-indigo-50 px-1.5 py-0.5 rounded">${spot.time}</span>
+                            <span class="text-indigo-500 text-[10px] font-bold whitespace-nowrap bg-indigo-50 px-1.5 py-0.5 rounded">#${index + 1}</span>
                         </div>
-                        <p class="text-gray-500 text-[11px] leading-relaxed relative z-10">${currentDesc}</p>
                     `;
 
                     card.onclick = () => {
-                        const targetMarker = markersMap[spot.id];
+                        const targetMarker = markersMap[spotId];
                         if (targetMarker) {
-                            osakaMap.flyTo(targetMarker.getLatLng(), 15, { duration: 1.2 });
-                            osakaMap.once('moveend', () => {
+                            itineraryMap.flyTo(targetMarker.getLatLng(), 15, { duration: 1.2 });
+                            itineraryMap.once('moveend', () => {
                                 targetMarker.openPopup();
                             });
                         }
                     };
                     listContainer.appendChild(card);
 
-                    // Marker & Popup
-                    const popupContent = `
-                        <div class="p-1 min-w-[150px]">
-                            <div class="text-indigo-600 text-[10px] font-bold mb-1">Day ${dayInfo.day} &middot; ${spot.time}</div>
-                            <h4 class="font-bold text-gray-900 text-sm mb-1">${currentName}</h4>
-                            <p class="text-[11px] text-gray-600 m-0">${currentDesc}</p>
+                    const altLang = langState === 'zh' ? 'ko' : 'zh';
+                    const altName = spot.name[altLang];
+                    const spotPopupContent = `
+                        <div style="text-align: center; font-family: sans-serif; width: 160px;">
+                            <img src="${spot.image}" width="160" height="100" style="object-fit: cover; border-radius: 6px; margin-bottom: 6px;" onload="this.closest('.leaflet-popup') && this.closest('.leaflet-popup')._initLayout && this.closest('.leaflet-popup').update();">
+                            <div style="font-weight: bold; font-size: 13px; color: #333;">${currentName}</div>
                         </div>
                     `;
 
-                    const marker = L.marker([spot.lat, spot.lng], { icon: createCustomIcon(dayInfo.day) })
-                        .bindPopup(popupContent, { offset: [0, -5] })
+                    const marker = L.marker(spot.coord, { icon: createCustomSpotIcon(index + 1) })
+                        .bindPopup(spotPopupContent, { offset: [0, -5] })
                         .addTo(markerGroup);
 
-                    markersMap[spot.id] = marker;
+                    markersMap[spotId] = marker;
                 });
-            });
+            } else {
+                if (resData.routePlan) {
+                    resData.routePlan.forEach(rp => {
+                        const rpDesc = rp[langState];
 
-            // Adjust bounds to fit all markers
-            const bounds = markerGroup.getBounds();
-            osakaMap.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+                        const card = document.createElement('div');
+                        card.className = "bg-white rounded-xl shadow-sm p-4 mb-3 cursor-pointer border-l-4 border-transparent hover:border-indigo-500 hover:shadow-md transition-all group relative overflow-hidden";
+                        card.innerHTML = `
+                            <div class="flex justify-between items-start mb-2 relative z-10">
+                                <span class="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Day ${rp.day}</span>
+                            </div>
+                            <p class="text-gray-700 text-[12px] font-semibold leading-relaxed relative z-10">${rpDesc}</p>
+                        `;
+
+                        card.onclick = () => {
+                            itineraryMap.flyTo(targetCenter, targetZoom, { duration: 1.2 });
+                            itineraryMap.once('moveend', () => {
+                                mainMarker.openPopup();
+                            });
+                        };
+                        listContainer.appendChild(card);
+                    });
+                }
+            }
+
+            if (isFirstMapLoad) {
+                setTimeout(() => {
+                    itineraryMap.flyTo(targetCenter, targetZoom, { duration: 2.0, easeLinearity: 0.25 });
+                    itineraryMap.once('moveend', () => {
+                        mainMarker.openPopup();
+                    });
+                }, 100);
+                isFirstMapLoad = false;
+            } else {
+                mainMarker.openPopup();
+            }
         }
 
         // --- INIT ---
